@@ -85,10 +85,10 @@ const ModulaversAboutSection = () => {
                       key={i}
                       className="absolute w-2 h-2 bg-primary/20 rounded-full animate-pulse"
                       style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                        animationDelay: `${Math.random() * 3}s`,
-                        animationDuration: `${2 + Math.random() * 2}s`
+                        left: `${((i * 17) % 100)}%`,
+                        top: `${((i * 23) % 100)}%`,
+                        animationDelay: `${((i * 0.7) % 3)}s`,
+                        animationDuration: `${2 + ((i * 0.5) % 2)}s`
                       }}
                     />
                   ))}

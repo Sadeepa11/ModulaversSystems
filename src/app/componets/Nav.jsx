@@ -54,9 +54,9 @@ const Nav = () => {
             <img
               src="/logo/mylogo/mv.png" 
               alt="Modulavers Systems" 
-              className="h-10 w-auto object-contain"
+              className="h-50 w-auto object-contain"
             />
-            <span className="ml-2 font-bold text-xl text-white">Modulavers</span>
+            {/* <span className="ml-2 font-bold text-xl text-white">Modulavers</span> */}
           </div>
 
           {/* Desktop Navigation */}

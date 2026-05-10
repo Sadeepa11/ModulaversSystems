@@ -49,68 +49,70 @@ const TeamSection = () => {
           {teamMembers.map((member, index) => (
             <div
               key={member.id}
-              className={`group relative transform transition-all duration-700 hover:scale-105 ${
+              className={`group relative transform transition-all duration-500 ${
                 index === 0 ? 'animate-slide-in-left' : 'animate-slide-in-right'
-              }`}
+              } ${
+                hoveredMember !== null && hoveredMember !== member.id ? 'opacity-40 scale-[0.95]' : 'opacity-100 scale-100'
+              } hover:scale-[1.02]`}
               onMouseEnter={() => setHoveredMember(member.id)}
               onMouseLeave={() => setHoveredMember(null)}
               style={{
                 animationDelay: `${index * 0.2}s`
               }}
             >
-              {/* Card Background */}
-              <div className="relative bg-dark-card/50 backdrop-blur-xl rounded-3xl p-12 border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden">
-                {/* Animated Background Gradient */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${member.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+              {/* Glow Effect Background */}
+              <div className={`absolute -inset-1 bg-gradient-to-r ${member.color} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500`}></div>
+              
+              {/* Card Main Body */}
+              <div className="relative bg-dark-card/90 backdrop-blur-xl rounded-3xl p-6 border border-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col">
                 
-                {/* Floating Elements */}
-                <div className="absolute top-4 right-4 w-20 h-20 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
-                <div className="absolute bottom-4 left-4 w-16 h-16 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-lg group-hover:scale-125 transition-transform duration-700"></div>
-
-                {/* Content */}
-                <div className="relative z-10">
-                  {/* Image Container - Full Width */}
-                  <div className="relative mb-10 h-120 group-hover:h-84 transition-all duration-500">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="relative w-full h-full object-cover rounded-2xl border-4 border-white/10 group-hover:border-white/20 transition-all duration-500 group-hover:scale-105"
-                    />
-                    {/* Pulse Ring */}
-                    <div className={`absolute inset-0 rounded-2xl border-2 border-white/30 ${
-                      hoveredMember === member.id ? 'animate-ping' : ''
-                    }`}></div>
+                {/* Image Section */}
+                <div className="relative rounded-2xl overflow-hidden mb-6 aspect-[4/5]">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-110"
+                  />
+                  {/* Gradient Overlay on Image */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500"></div>
+                  
+                  {/* Floating badge inside image */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
+                      <p className={`text-sm font-bold bg-gradient-to-r ${member.color} bg-clip-text text-transparent`}>
+                        {member.position}
+                      </p>
+                    </div>
                   </div>
+                </div>
 
-                  {/* Text Content */}
-                  <div className="text-center">
+                {/* Info Section */}
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
                     <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary group-hover:bg-clip-text transition-all duration-500">
                       {member.name}
                     </h3>
-                    
-                    <div className="relative mb-6">
-                      <p className={`text-lg font-semibold bg-gradient-to-r ${member.color} bg-clip-text text-transparent`}>
-                        {member.position}
-                      </p>
-                      <div className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r ${member.color} group-hover:w-full transition-all duration-500`}></div>
-                    </div>
-
-                    <p className={`text-white/60 leading-relaxed transition-all duration-500 ${
-                      hoveredMember === member.id ? 'text-white' : ''
-                    }`}>
+                    <p className="text-white/60 text-sm leading-relaxed mb-6 group-hover:text-white/80 transition-colors duration-500">
                       {member.description}
                     </p>
                   </div>
 
-                  {/* Hover Indicator */}
-                  <div className={`absolute top-6 left-6 w-3 h-3 rounded-full bg-gradient-to-r ${member.color} transition-all duration-500 ${
-                    hoveredMember === member.id ? 'scale-150 opacity-100' : 'scale-0 opacity-0'
-                  }`}></div>
+                  {/* Social & Action */}
+                  <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
+                    <div className="flex gap-4">
+                      <a href="#" className="text-white/40 hover:text-white transition-colors">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                      </a>
+                      <a href="#" className="text-white/40 hover:text-white transition-colors">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.986-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                      </a>
+                    </div>
+                    <button className={`text-xs font-semibold bg-gradient-to-r ${member.color} bg-clip-text text-transparent hover:scale-105 transition-transform`}>
+                      View Profile →
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              {/* Shadow Effect */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${member.color} rounded-3xl blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500 -z-10`}></div>
             </div>
           ))}
         </div>

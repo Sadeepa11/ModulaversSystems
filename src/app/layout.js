@@ -48,7 +48,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/public/logo/mylogo/mv.png", // Add a real image in /public/images/
+        url: "/logo/mylogo/icon.png", // Add a real image in /public/images/
         width: 1200,
         height: 630,
         alt: "Modulavers Systems – Software Solutions Sri Lanka",
@@ -64,8 +64,8 @@ export const metadata = {
     images: ["/images/og-image.jpg"],
   },
   icons: {
-    icon: "/public/logo/mylogo/mv.png",
-    apple: "/public/logo/mylogo/mv.png",
+    icon: "/logo/mylogo/icon.png",
+    apple: "/logo/mylogo/icon.png",
   },
   robots: {
     index: true,
