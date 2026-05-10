@@ -1,13 +1,14 @@
 'use client'
 import React from 'react';
 import { Code, Brush, Video, Image, Users, Earth, Star, ArrowRight, CheckCircle, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import ServiceCard from './ServiceCard'; // Import the separate card component
 
 const ServicesSection = () => {
     const services = [
         {
             name: 'Web Development',
-            href: '/products/web',
+            href: '/services/web',
             icon: Code,
             description: 'We develop responsive and high-performance websites and web applications tailored to your business needs using modern technologies like React, Next.js, and Node.js.',
             features: ['Responsive Design', 'Performance Optimization', 'Modern Tech Stack', 'SEO Ready'],
@@ -18,7 +19,7 @@ const ServicesSection = () => {
         },
         {
             name: 'UI/UX Designing',
-            href: '/products/ui',
+            href: '/services/ui',
             icon: Brush,
             description: 'We craft intuitive, visually pleasing interfaces and seamless user experiences through wireframing, prototyping, and user research, ensuring your product stands out and feels great to use.',
             features: ['User Research', 'Wireframing', 'Prototyping', 'Visual Design'],
@@ -29,7 +30,7 @@ const ServicesSection = () => {
         },
         {
             name: 'Video Editing',
-            href: '/products/video',
+            href: '/services/video',
             icon: Video,
             description: 'From YouTube content to corporate promos, we edit and enhance videos with smooth transitions, sound design, subtitles, effects, and more — professionally and creatively.',
             features: ['Professional Editing', 'Sound Design', 'Motion Graphics', 'Color Grading'],
@@ -40,7 +41,7 @@ const ServicesSection = () => {
         },
         {
             name: 'Graphic Designing',
-            href: '/products/graphic',
+            href: '/services/graphic',
             icon: Image,
             description: 'We design eye-catching graphics for branding, advertising, and digital platforms — including logos, banners, flyers, packaging, and social media creatives.',
             features: ['Logo Design', 'Brand Identity', 'Print Design', 'Social Media Graphics'],
@@ -51,7 +52,7 @@ const ServicesSection = () => {
         },
         {
             name: 'Digital Marketing',
-            href: '/products/digital_marketing',
+            href: '/services/digital_marketing',
             icon: Users,
             description: 'Boost your online presence through strategic campaigns including social media marketing, Google Ads, email campaigns, influencer outreach, and performance tracking.',
             features: ['Social Media Marketing', 'Google Ads', 'Email Campaigns', 'Analytics & Reporting'],
@@ -62,7 +63,7 @@ const ServicesSection = () => {
         },
         {
             name: 'SEO',
-            href: '/products/seo',
+            href: '/services/seo',
             icon: Earth,
             description: 'Our SEO services improve your websites ranking on Google and other search engines through keyword optimization, technical audits, backlink strategies, and content enhancement.',
             features: ['Keyword Research', 'Technical SEO', 'Link Building', 'Content Optimization'],
@@ -83,7 +84,13 @@ const ServicesSection = () => {
             
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Section Header */}
-                <div className="text-center max-w-4xl mx-auto mt-10">
+                <motion.div 
+                    className="text-center max-w-4xl mx-auto mt-10"
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    viewport={{ once: true }}
+                >
                     <div className="inline-flex items-center bg-white/5 text-accent px-6 py-3 rounded-full text-sm font-medium mb-6 border border-white/10 shadow-lg">
                         <Sparkles className="w-4 h-4 mr-2" />
                         Premium Services
@@ -97,10 +104,16 @@ const ServicesSection = () => {
                     <p className="text-xl text-white/60 leading-relaxed max-w-3xl mx-auto">
                         Transform your business with our comprehensive digital services. From stunning websites to powerful marketing campaigns, we deliver results that matter.
                     </p>
-                </div>
+                </motion.div>
 
                 {/* Services Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 mt-16">
+                <motion.div 
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 mt-16"
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    viewport={{ once: true }}
+                >
                     {services.map((service, index) => (
                         <ServiceCard 
                             key={service.name} 
@@ -108,7 +121,7 @@ const ServicesSection = () => {
                             index={index} 
                         />
                     ))}
-                </div>
+                </motion.div>
 
                 {/* Stats Section */}
                 <div className="bg-dark-card/50 backdrop-blur-xl rounded-3xl p-8 sm:p-12 shadow-2xl border border-white/10 mb-16">

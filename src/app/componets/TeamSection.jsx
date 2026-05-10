@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const TeamSection = () => {
   const [hoveredMember, setHoveredMember] = useState(null);
@@ -28,11 +29,17 @@ const TeamSection = () => {
     <div className="min-h-screen w-[100%] bg-dark-bg py-20 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
           <div className="inline-flex items-center bg-white/5 text-accent px-4 py-2 rounded-full text-sm font-medium mb-4 border border-white/10">
             Our Team
           </div>
-          <h2 className="text-5xl font-bold text-white mb-4 animate-fade-in">
+          <h2 className="text-5xl font-bold text-white mb-4">
             Meet Our
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent ml-4">
               Leadership
@@ -42,23 +49,22 @@ const TeamSection = () => {
           <p className="text-xl text-white/60 max-w-2xl mx-auto">
             Driven by innovation and excellence, our leadership team brings decades of combined experience
           </p>
-        </div>
+        </motion.div>
 
         {/* Team Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-12">
           {teamMembers.map((member, index) => (
-            <div
+            <motion.div
               key={member.id}
               className={`group relative transform transition-all duration-500 ${
-                index === 0 ? 'animate-slide-in-left' : 'animate-slide-in-right'
-              } ${
                 hoveredMember !== null && hoveredMember !== member.id ? 'opacity-40 scale-[0.95]' : 'opacity-100 scale-100'
               } hover:scale-[1.02]`}
               onMouseEnter={() => setHoveredMember(member.id)}
               onMouseLeave={() => setHoveredMember(null)}
-              style={{
-                animationDelay: `${index * 0.2}s`
-              }}
+              initial={{ opacity: 0, x: index === 0 ? -50 : 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: index * 0.2 }}
+              viewport={{ once: true }}
             >
               {/* Glow Effect Background */}
               <div className={`absolute -inset-1 bg-gradient-to-r ${member.color} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500`}></div>
@@ -113,7 +119,7 @@ const TeamSection = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

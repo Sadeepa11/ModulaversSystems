@@ -128,7 +128,7 @@ ${detection.flags.length > 0 ? `🚩 *Flags:* ${detection.flags.join(', ')}` : '
 📅 *Submitted:* ${new Date().toLocaleString()}`;
 
     // WhatsApp number (your number)
-    const whatsappNumber = '94705103507';
+    const whatsappNumber = '94765772504';
     
     // Create WhatsApp URL
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
@@ -190,49 +190,49 @@ ${detection.flags.length > 0 ? `🚩 *Flags:* ${detection.flags.join(', ')}` : '
         )}
 
         {/* Contact Form Container */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Info Panel */}
-          <div className="bg-dark-card/50 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl md:col-span-1">
+          <div className="bg-gradient-to-br from-dark-card/80 to-dark-card/40 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl md:col-span-2 hover:border-primary/30 transition-all duration-500">
             <div className="space-y-8">
               <div>
                 <h3 className="text-xl font-bold text-white mb-4">Contact Info</h3>
                 <p className="text-white/60 text-sm">We are always open to discuss new projects or partnerships.</p>
               </div>
               
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-white/5 rounded-xl text-accent">
+              <div className="flex items-start gap-4 group cursor-pointer">
+                <div className="p-3 bg-white/5 rounded-xl text-accent group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:text-white transition-all duration-300">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-white/40 text-xs font-medium uppercase">Email</p>
-                  <p className="text-white text-sm">info@modulavers.com</p>
+                  <p className="text-white text-sm break-all group-hover:text-white/90 transition-colors">info@modulaverssystems.com</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-white/5 rounded-xl text-accent">
+              <div className="flex items-start gap-4 group cursor-pointer">
+                <div className="p-3 bg-white/5 rounded-xl text-accent group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:text-white transition-all duration-300">
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-white/40 text-xs font-medium uppercase">Phone</p>
-                  <p className="text-white text-sm">+94 70 510 3507</p>
+                  <p className="text-white text-sm group-hover:text-white/90 transition-colors">+94 76 577 2504</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-white/5 rounded-xl text-accent">
+              <div className="flex items-start gap-4 group cursor-pointer">
+                <div className="p-3 bg-white/5 rounded-xl text-accent group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:text-white transition-all duration-300">
                   <Shield className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-white/40 text-xs font-medium uppercase">Security</p>
-                  <p className="text-white text-sm">Protected by Smart Detection</p>
+                  <p className="text-white text-sm group-hover:text-white/90 transition-colors">Protected by Smart Detection</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Form */}
-          <div className="bg-dark-card/50 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl md:col-span-2">
+          <div className="bg-gradient-to-br from-dark-card/80 to-dark-card/40 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl md:col-span-3 hover:border-secondary/30 transition-all duration-500">
             <div className="space-y-6">
               {/* Name and Email Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -349,11 +349,6 @@ ${detection.flags.length > 0 ? `🚩 *Flags:* ${detection.flags.join(', ')}` : '
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-12 text-white/20 text-xs">
-          <p>© 2026 Modulavers Systems. Built with Next.js & React.</p>
         </div>
       </div>
     </div>

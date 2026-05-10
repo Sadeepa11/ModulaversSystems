@@ -8,15 +8,13 @@ import ServicesSection from "./componets/Services";
 export default function Home() {
   return (
   <div className="w-full min-h-screen">
-  <Welcome />
-  {/* <ServicesGrid/> */}
-
-  <ServicesSection/>
-    <TeamSection/>
-  <ModulaversAboutSection/>
-  <ContactDetectionForm/>
-  <SoftwareCompanyFooter/>
-</div>
+    <div id="home"><Welcome /></div>
+    <div id="services"><ServicesSection/></div>
+    <div id="team"><TeamSection/></div>
+    <div id="about"><ModulaversAboutSection/></div>
+    <div id="contact"><ContactDetectionForm/></div>
+    <SoftwareCompanyFooter/>
+  </div>
 
   );
 }

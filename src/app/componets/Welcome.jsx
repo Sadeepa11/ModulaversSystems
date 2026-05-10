@@ -30,8 +30,8 @@ const Welcome = () => {
                 </div>
                 
                 <SplitText
-                    text="Welcome to Modulavers Systems!!!"
-                    className="text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-6"
+                    text="Welcome to Modulavers Systems"
+                    className="text-2xl md:text-4xl lg:text-6xl font-bold text-center mb-6"
                     delay={50}
                     duration={0.1}
                     ease="power3.out"

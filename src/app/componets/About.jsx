@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Code, Zap, Users, Target, Award, Globe, Lightbulb, Rocket } from 'lucide-react';
 
 const ModulaversAboutSection = () => {
@@ -34,9 +35,12 @@ const ModulaversAboutSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
-          <div className={`transition-all duration-1000 ${
-            isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
-          }`}>
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
             <div className="mb-8">
               <div className="inline-flex items-center bg-white/5 text-accent px-4 py-2 rounded-full text-sm font-medium mb-4 border border-white/10">
                 About Us
@@ -69,12 +73,15 @@ const ModulaversAboutSection = () => {
                 Learn More
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Content */}
-          <div className={`transition-all duration-1000 ${
-            isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
-          }`}>
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
             <div className="relative">
               {/* Main Card */}
               <div className="bg-dark-card/50 backdrop-blur-xl rounded-3xl p-8 relative overflow-hidden border border-white/10 shadow-2xl">
@@ -140,7 +147,7 @@ const ModulaversAboutSection = () => {
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl blur-xl -z-10"></div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Bottom Decorative Elements */}

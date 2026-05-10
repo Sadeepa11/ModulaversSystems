@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ChevronDown, Code, Zap, Users, Phone, ArrowRight, Video, BrushIcon, EarthIcon, Image } from 'lucide-react';
+import Link from 'next/link';
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,12 +22,12 @@ const Nav = () => {
     { 
       name: 'Services', 
       dropdown: [
-        { name: 'Web Development', href: '/products/web', icon: Code },
-        { name: 'UI/UX designing', href: '/products/ui', icon: BrushIcon },
-        { name: 'Video Editting', href: '/products/video', icon: Video },
-        { name: 'Graphic Designing', href: '/products/graphic', icon: Image },
-        { name: 'Degital Marketing', href: '/products/degital_marketing', icon: Users },
-        { name: 'SEO', href: '/products/seo', icon: EarthIcon }
+        { name: 'Web Development', href: '/services/web', icon: Code },
+        { name: 'UI/UX designing', href: '/services/ui', icon: BrushIcon },
+        { name: 'Video Editting', href: '/services/video', icon: Video },
+        { name: 'Graphic Designing', href: '/services/graphic', icon: Image },
+        { name: 'Digital Marketing', href: '/services/digital_marketing', icon: Users },
+        { name: 'SEO', href: '/services/seo', icon: EarthIcon }
       ]
     },
     { name: 'Team', href: '/team' },
@@ -63,19 +64,26 @@ const Nav = () => {
           <div className="hidden md:flex items-center space-x-2">
             {navItems.map((item, index) => (
               <div key={item.name} className="relative group">
-                <button
-                  className="flex items-center space-x-1 px-4 py-2 rounded-xl text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10"
-                  onClick={() => item.dropdown && handleDropdown(index)}
-                  onMouseEnter={() => item.dropdown && setActiveDropdown(index)}
-                  onMouseLeave={() => item.dropdown && setActiveDropdown(null)}
-                >
-                  <span className="font-medium">{item.name}</span>
-                  {item.dropdown && (
+                {item.dropdown ? (
+                  <button
+                    className="flex items-center space-x-1 px-4 py-2 rounded-xl text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10"
+                    onClick={() => handleDropdown(index)}
+                    onMouseEnter={() => setActiveDropdown(index)}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                  >
+                    <span className="font-medium">{item.name}</span>
                     <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${
                       activeDropdown === index ? 'rotate-180' : ''
                     }`} />
-                  )}
-                </button>
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="flex items-center space-x-1 px-4 py-2 rounded-xl text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10"
+                  >
+                    <span className="font-medium">{item.name}</span>
+                  </Link>
+                )}
 
                 {/* Dropdown Menu */}
                 {item.dropdown && (
@@ -108,10 +116,10 @@ const Nav = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="group flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-all duration-300 hover:scale-105">
+            <a href="/#contact" className="group flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-all duration-300 hover:scale-105">
               <span className="font-medium">Get Started</span>
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -171,10 +179,10 @@ const Nav = () => {
             
             {/* Mobile CTA */}
             <div className="pt-4 border-t border-white/10">
-              <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200">
+              <a href="/#contact" className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200">
                 <span className="font-medium">Get Started</span>
                 <ArrowRight className="h-4 w-4" />
-              </button>
+              </a>
             </div>
           </div>
         </div>
