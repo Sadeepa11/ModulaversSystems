@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Mail, Phone, User, MessageSquare, Shield, AlertTriangle, CheckCircle, Send } from 'lucide-react';
+import { Mail, Phone, User, MessageSquare, Shield, AlertTriangle, CheckCircle, Send, Sparkles } from 'lucide-react';
 
 const ContactDetectionForm = () => {
   const [formData, setFormData] = useState({
@@ -156,23 +156,31 @@ ${detection.flags.length > 0 ? `🚩 *Flags:* ${detection.flags.join(', ')}` : '
   };
 
   return (
-    <div className="min-h-screen w-[100%] bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen w-[100%] bg-dark-bg py-20 px-4 overflow-hidden">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Shield className="w-10 h-10 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Smart Contact Form</h1>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center bg-white/5 text-accent px-4 py-2 rounded-full text-sm font-medium mb-4 border border-white/10">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Get in Touch
           </div>
-          <p className="text-gray-600">Protected by intelligent spam detection</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Let's Build Something
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent ml-3">
+              Great
+            </span>
+          </h1>
+          <p className="text-white/60 max-w-2xl mx-auto">
+            Have a project in mind or want to learn more about our services? Fill out the form below and we'll get back to you shortly.
+          </p>
         </div>
 
         {/* Notification */}
         {notification && (
-          <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 animate-pulse ${
-            notification.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' :
-            notification.type === 'warning' ? 'bg-yellow-50 text-yellow-800 border border-yellow-200' :
-            'bg-red-50 text-red-800 border border-red-200'
+          <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 animate-pulse ${
+            notification.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
+            notification.type === 'warning' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' :
+            'bg-red-500/10 text-red-400 border border-red-500/20'
           }`}>
             {notification.type === 'success' && <CheckCircle className="w-5 h-5 flex-shrink-0" />}
             {notification.type === 'warning' && <AlertTriangle className="w-5 h-5 flex-shrink-0" />}
@@ -181,130 +189,171 @@ ${detection.flags.length > 0 ? `🚩 *Flags:* ${detection.flags.join(', ')}` : '
           </div>
         )}
 
-        {/* Contact Form */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-blue-600" />
-            Get in Touch
-          </h2>
-          
-          <div className="space-y-6">
-            {/* Name and Email Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Contact Form Container */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Info Panel */}
+          <div className="bg-dark-card/50 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl md:col-span-1">
+            <div className="space-y-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name *
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="Enter your full name"
-                  />
-                </div>
+                <h3 className="text-xl font-bold text-white mb-4">Contact Info</h3>
+                <p className="text-white/60 text-sm">We are always open to discuss new projects or partnerships.</p>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address *
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="your@email.com"
-                  />
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-white/5 rounded-xl text-accent">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs font-medium uppercase">Email</p>
+                  <p className="text-white text-sm">info@modulavers.com</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-white/5 rounded-xl text-accent">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs font-medium uppercase">Phone</p>
+                  <p className="text-white text-sm">+94 70 510 3507</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-white/5 rounded-xl text-accent">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs font-medium uppercase">Security</p>
+                  <p className="text-white text-sm">Protected by Smart Detection</p>
                 </div>
               </div>
             </div>
-
-            {/* Phone and Subject Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="+94 70 123 4567"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Subject *
-                </label>
-                <input
-                  type="text"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  placeholder="What's this about?"
-                />
-              </div>
-            </div>
-
-            {/* Message */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Message *
-              </label>
-              <textarea
-                rows={5}
-                value={formData.message}
-                onChange={(e) => setFormData({...formData, message: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
-                placeholder="Tell us more about your inquiry..."
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  Send via WhatsApp
-                </>
-              )}
-            </button>
           </div>
 
-          {/* Security Notice */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="flex items-center gap-2 text-blue-800">
-              <Shield className="w-4 h-4" />
-              <span className="text-sm font-medium">Protected by Smart Detection</span>
+          {/* Form */}
+          <div className="bg-dark-card/50 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl md:col-span-2">
+            <div className="space-y-6">
+              {/* Name and Email Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-2">
+                    Full Name *
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-3.5 w-4 h-4 text-white/40" />
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-white placeholder-white/20"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-2">
+                    Email Address *
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-3.5 w-4 h-4 text-white/40" />
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-white placeholder-white/20"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Phone and Subject Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-2">
+                    Phone Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-3.5 w-4 h-4 text-white/40" />
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-white placeholder-white/20"
+                      placeholder="+94 70 123 4567"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-2">
+                    Subject *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-white placeholder-white/20"
+                    placeholder="Project Inquiry"
+                  />
+                </div>
+              </div>
+
+              {/* Message */}
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-2">
+                  Message *
+                </label>
+                <div className="relative">
+                  <MessageSquare className="absolute left-4 top-3.5 w-4 h-4 text-white/40" />
+                  <textarea
+                    rows={5}
+                    value={formData.message}
+                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-white placeholder-white/20 resize-none"
+                    placeholder="Tell us more about your project..."
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-primary to-secondary text-white py-3.5 px-6 rounded-xl font-medium hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Send via WhatsApp
+                  </>
+                )}
+              </button>
+
+              {/* Security Notice */}
+              <div className="p-4 bg-white/5 rounded-xl border border-white/10 flex items-start gap-3">
+                <Shield className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-white text-sm font-medium">Protected by Smart Detection</p>
+                  <p className="text-white/40 text-xs mt-0.5">
+                    This form uses intelligent spam detection to filter malicious content and protect against unwanted messages.
+                  </p>
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-blue-600 mt-1">
-              This form uses intelligent spam detection to filter malicious content and protect against unwanted messages.
-            </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 text-gray-500 text-sm">
-          <p>© 2025 Smart Contact System. Built with Next.js & React.</p>
+        <div className="text-center mt-12 text-white/20 text-xs">
+          <p>© 2026 Modulavers Systems. Built with Next.js & React.</p>
         </div>
       </div>
     </div>

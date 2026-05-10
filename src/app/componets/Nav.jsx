@@ -20,7 +20,6 @@ const Nav = () => {
     { name: 'Home', href: '/' },
     { 
       name: 'Services', 
-    //   href: '/',
       dropdown: [
         { name: 'Web Development', href: '/products/web', icon: Code },
         { name: 'UI/UX designing', href: '/products/ui', icon: BrushIcon },
@@ -43,37 +42,36 @@ const Nav = () => {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <nav className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 w-[95%] max-w-7xl mx-auto ${
       isScrolled 
-        ? 'bg-gray-900 shadow-lg border-b border-gray-200/20' 
-        : 'bg-transparent'
+        ? 'bg-gray-900/80 backdrop-blur-xl shadow-2xl rounded-2xl border border-white/10' 
+        : 'bg-transparent rounded-none border-transparent'
     }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-{/* Logo */}
-<div className="flex items-center">
-  <img
-    src="/logo/mylogo/mv.png" 
-    alt="Modulavers Systems" 
-
-    className="h-50 w-auto object-contain"
-  />
-</div>
-
+          {/* Logo */}
+          <div className="flex items-center">
+            <img
+              src="/logo/mylogo/mv.png" 
+              alt="Modulavers Systems" 
+              className="h-10 w-auto object-contain"
+            />
+            <span className="ml-2 font-bold text-xl text-white">Modulavers</span>
+          </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-2">
             {navItems.map((item, index) => (
               <div key={item.name} className="relative group">
                 <button
-                  className="flex items-center space-x-1 px-4 py-2 rounded-lg text-gray-700 hover:text-blue-600 transition-all duration-200 hover:bg-gray-900"
+                  className="flex items-center space-x-1 px-4 py-2 rounded-xl text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10"
                   onClick={() => item.dropdown && handleDropdown(index)}
                   onMouseEnter={() => item.dropdown && setActiveDropdown(index)}
                   onMouseLeave={() => item.dropdown && setActiveDropdown(null)}
                 >
-                  <span className="font-medium  text-white font-bold">{item.name}</span>
+                  <span className="font-medium">{item.name}</span>
                   {item.dropdown && (
-                    <ChevronDown className={`h-4 w-4 transition-transform duration-200  text-white font-bold ${
+                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${
                       activeDropdown === index ? 'rotate-180' : ''
                     }`} />
                   )}
@@ -81,7 +79,7 @@ const Nav = () => {
 
                 {/* Dropdown Menu */}
                 {item.dropdown && (
-                  <div className={`absolute top-full left-0 mt-2 w-64 bg-gray-900 rounded-xl shadow-xl border border-gray-200/20 backdrop-blur-sm transition-all duration-200 ${
+                  <div className={`absolute top-full left-0 mt-2 w-64 bg-gray-900 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 transition-all duration-300 ${
                     activeDropdown === index 
                       ? 'opacity-100 visible translate-y-0' 
                       : 'opacity-0 invisible -translate-y-2'
@@ -93,12 +91,12 @@ const Nav = () => {
                         <a
                           key={dropItem.name}
                           href={dropItem.href}
-                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-transparent hover:border-1 border-gray-500 transition-all duration-200 group"
+                          className="flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 transition-all duration-200 group"
                         >
                           <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg group-hover:scale-110 transition-transform duration-200">
                             <dropItem.icon className="h-4 w-4 text-white" />
                           </div>
-                          <span className=" font-medium  text-white font-bold">{dropItem.name}</span>
+                          <span className="font-medium text-white/90 group-hover:text-white">{dropItem.name}</span>
                         </a>
                       ))}
                     </div>
@@ -110,7 +108,7 @@ const Nav = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="group flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-105">
+            <button className="group flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-all duration-300 hover:scale-105">
               <span className="font-medium">Get Started</span>
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
             </button>
@@ -120,32 +118,32 @@ const Nav = () => {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="p-2 rounded-lg hover:bg-gray-900 transition-colors duration-200"
+              className="p-2 rounded-xl hover:bg-white/10 transition-colors duration-200"
             >
               {isMenuOpen ? (
-                <X className="h-6 w-6 text-gray-700" />
+                <X className="h-6 w-6 text-white" />
               ) : (
-                <Menu className="h-6 w-6 text-gray-700" />
+                <Menu className="h-6 w-6 text-white" />
               )}
             </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        <div className={`md:hidden transition-all  duration-300 ease-in-out ${
+        <div className={`md:hidden transition-all duration-300 ease-in-out ${
           isMenuOpen 
-            ? 'max-h-96 opacity-100 pb-4' 
+            ? 'max-h-[500px] opacity-100 pb-4' 
             : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
-          <div className="pt-4 space-y-2 rounded bg-gray-900">
+          <div className="pt-4 space-y-2 bg-gray-900 rounded-xl p-4 border border-white/10">
             {navItems.map((item, index) => (
               <div key={item.name}>
                 <a
                   href={item.href}
-                  className="flex items-center justify-between p-3 rounded-lg hover:border-1 border-gray-500 bg-gray-900 transition-colors duration-200"
+                  className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors duration-200"
                   onClick={() => item.dropdown && handleDropdown(index)}
                 >
-                  <span className="font-medium text-white font-bold">{item.name}</span>
+                  <span className="font-medium text-white">{item.name}</span>
                   {item.dropdown && (
                     <ChevronDown className={`h-4 w-4 text-white transition-transform duration-200 ${
                       activeDropdown === index ? 'rotate-180' : ''
@@ -160,10 +158,10 @@ const Nav = () => {
                       <a
                         key={dropItem.name}
                         href={dropItem.href}
-                        className="flex items-center space-x-3 p-2 rounded-lg bg-gray-900 hover:border-1 border-gray-500 transition-colors duration-200"
+                        className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/5 transition-colors duration-200"
                       >
                         <dropItem.icon className="h-4 w-4 text-white" />
-                        <span className=" text-white font-bold">{dropItem.name}</span>
+                        <span className="text-white/80">{dropItem.name}</span>
                       </a>
                     ))}
                   </div>
@@ -172,8 +170,8 @@ const Nav = () => {
             ))}
             
             {/* Mobile CTA */}
-            <div className="pt-4 border-t border-gray-200">
-              <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200">
+            <div className="pt-4 border-t border-white/10">
+              <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200">
                 <span className="font-medium">Get Started</span>
                 <ArrowRight className="h-4 w-4" />
               </button>

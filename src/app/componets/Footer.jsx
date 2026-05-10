@@ -18,7 +18,8 @@ import {
   Award,
   Users,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Sparkles
 } from 'lucide-react';
 
 const SoftwareCompanyFooter = () => {
@@ -39,7 +40,7 @@ const SoftwareCompanyFooter = () => {
   };
 
   return (
-    <footer className="bg-gray-900 w-[100%] text-white relative overflow-hidden">
+    <footer className="bg-dark-bg w-[100%] text-white relative overflow-hidden border-t border-white/5">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -48,40 +49,28 @@ const SoftwareCompanyFooter = () => {
       </div>
 
       {/* Main Footer Content */}
-      <div className="relative w-[100] z-10 max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="relative w-[100%] z-10 max-w-7xl mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           
           {/* Company Info */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex items-center space-x-2">
-
-            <div className="flex items-center">
-  <img
-    src="/logo/mylogo/mv.png" 
-    alt="Modulavers Systems" 
-
-    className="h-50 w-auto object-contain"
-  />
-</div>
-
-
-
-              {/* <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Code className="w-6 h-6 text-white" />
+              <div className="flex items-center">
+                <img
+                  src="/logo/mylogo/mv.png" 
+                  alt="Modulavers Systems" 
+                  className="h-12 w-auto object-contain"
+                />
               </div>
-              <div>
-                <h3 className="text-xl font-bold">TechCorp</h3>
-                <p className="text-blue-400 text-sm">Software Solutions</p>
-              </div> */}
             </div>
             
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-white/60 text-sm leading-relaxed">
               Empowering businesses with innovative software solutions. We specialize in web development, mobile apps, and enterprise software.
             </p>
             
             <div className="flex space-x-4 pt-2">
-              <div className="flex items-center space-x-2 text-sm text-gray-400">
-                <Award className="w-4 h-4 text-yellow-500" />
+              <div className="flex items-center space-x-2 text-sm text-white/60">
+                <Award className="w-4 h-4 text-accent" />
                 <span>ISO 9001 Certified</span>
               </div>
             </div>
@@ -102,8 +91,8 @@ const SoftwareCompanyFooter = () => {
                 'Maintenance & Support'
               ].map((service, index) => (
                 <li key={index}>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2">
-                    <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
+                  <a href="#" className="text-white/40 hover:text-accent transition-colors duration-200 text-sm flex items-center space-x-2">
+                    <span className="w-1 h-1 bg-primary rounded-full"></span>
                     <span>{service}</span>
                   </a>
                 </li>
@@ -126,8 +115,8 @@ const SoftwareCompanyFooter = () => {
                 'Privacy Policy'
               ].map((link, index) => (
                 <li key={index}>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2">
-                    <span className="w-1 h-1 bg-purple-500 rounded-full"></span>
+                  <a href="#" className="text-white/40 hover:text-accent transition-colors duration-200 text-sm flex items-center space-x-2">
+                    <span className="w-1 h-1 bg-secondary rounded-full"></span>
                     <span>{link}</span>
                   </a>
                 </li>
@@ -142,21 +131,21 @@ const SoftwareCompanyFooter = () => {
               
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">
-                  <MapPin className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                  <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-gray-400">No: 8/2, Neelammahara Road,</p>
-                    <p className="text-sm text-gray-400">Katuwawala,Boralesgamuwa,Western Province,Sri Lanka</p>
+                    <p className="text-sm text-white/60">No: 8/2, Neelammahara Road,</p>
+                    <p className="text-sm text-white/60">Katuwawala,Boralesgamuwa,Western Province,Sri Lanka</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-blue-400" />
-                  <p className="text-sm text-gray-400">+94 76 577 2504</p>
+                  <Phone className="w-5 h-5 text-accent" />
+                  <p className="text-sm text-white/60">+94 76 577 2504</p>
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-blue-400" />
-                  <p className="text-sm text-gray-400">info@modulavers.lk</p>
+                  <Mail className="w-5 h-5 text-accent" />
+                  <p className="text-sm text-white/60">info@modulavers.lk</p>
                 </div>
               </div>
             </div>
@@ -170,12 +159,12 @@ const SoftwareCompanyFooter = () => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-white/20"
                 />
                 <button
                   onClick={handleNewsletter}
                   disabled={subscribed}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center space-x-1 disabled:opacity-50"
+                  className="px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200 flex items-center space-x-1 disabled:opacity-50"
                 >
                   {subscribed ? (
                     <CheckCircle className="w-4 h-4" />
@@ -192,34 +181,34 @@ const SoftwareCompanyFooter = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
+        <div className="mt-16 pt-8 border-t border-white/5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="space-y-2">
               <div className="text-2xl font-bold text-white">500+</div>
-              <div className="text-sm text-gray-400">Projects Completed</div>
+              <div className="text-sm text-white/40">Projects Completed</div>
             </div>
             <div className="space-y-2">
               <div className="text-2xl font-bold text-white">50+</div>
-              <div className="text-sm text-gray-400">Happy Clients</div>
+              <div className="text-sm text-white/40">Happy Clients</div>
             </div>
             <div className="space-y-2">
               <div className="text-2xl font-bold text-white">24/7</div>
-              <div className="text-sm text-gray-400">Support Available</div>
+              <div className="text-sm text-white/40">Support Available</div>
             </div>
             <div className="space-y-2">
               <div className="text-2xl font-bold text-white">99.9%</div>
-              <div className="text-sm text-gray-400">Uptime Guarantee</div>
+              <div className="text-sm text-white/40">Uptime Guarantee</div>
             </div>
           </div>
         </div>
 
         {/* Technologies */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
+        <div className="mt-12 pt-8 border-t border-white/5">
           <div className="text-center mb-6">
             <h5 className="text-sm font-semibold text-white mb-4">Technologies We Use</h5>
             <div className="flex flex-wrap justify-center gap-3">
-              {['React', 'Node.js', 'Python', 'Java', 'Flutter', 'AWS', 'Docker', 'MongoDB'].map((tech, index) => (
-                <span key={index} className="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs hover:bg-gray-700 transition-colors">
+              {['React', 'Next.js', 'Node.js', 'Python', 'Java', 'Flutter', 'AWS', 'Docker', 'MongoDB'].map((tech, index) => (
+                <span key={index} className="px-4 py-1.5 bg-white/5 text-white/60 rounded-full text-xs hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
                   {tech}
                 </span>
               ))}
@@ -228,23 +217,23 @@ const SoftwareCompanyFooter = () => {
         </div>
 
         {/* Social Links */}
-        <div className="mt-8 pt-6 border-t border-gray-800">
+        <div className="mt-8 pt-6 border-t border-white/5">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex space-x-4">
               {[
-                { icon: Facebook, color: 'hover:text-blue-400' },
-                { icon: Twitter, color: 'hover:text-blue-400' },
-                { icon: Linkedin, color: 'hover:text-blue-400' },
-                { icon: Instagram, color: 'hover:text-pink-400' },
-                { icon: Github, color: 'hover:text-gray-400' }
+                { icon: Facebook, color: 'hover:text-primary' },
+                { icon: Twitter, color: 'hover:text-primary' },
+                { icon: Linkedin, color: 'hover:text-primary' },
+                { icon: Instagram, color: 'hover:text-accent' },
+                { icon: Github, color: 'hover:text-white' }
               ].map((social, index) => (
-                <a key={index} href="#" className={`text-gray-400 ${social.color} transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800`}>
+                <a key={index} href="#" className={`text-white/40 ${social.color} transition-colors duration-200 p-2 rounded-lg hover:bg-white/5`}>
                   <social.icon className="w-5 h-5" />
                 </a>
               ))}
             </div>
             
-            <div className="flex items-center space-x-4 text-sm text-gray-400">
+            <div className="flex items-center space-x-6 text-sm text-white/40">
               <div className="flex items-center space-x-2">
                 <Globe className="w-4 h-4" />
                 <span>English</span>
@@ -259,18 +248,16 @@ const SoftwareCompanyFooter = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-gray-950 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-            <div className="text-sm text-gray-400">
-              © {new Date().getFullYear()}Modulavers Systems. All rights reserved.
+      <div className="bg-black/50 backdrop-blur-xl border-t border-white/5 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="text-sm text-white/40">
+              © {new Date().getFullYear()} Modulavers Systems. All rights reserved.
             </div>
-            <div className="flex items-center space-x-4 text-sm">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
-              <span className="text-gray-600">|</span>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-              <span className="text-gray-600">|</span>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Cookie Policy</a>
+            <div className="flex items-center space-x-6 text-sm">
+              <a href="#" className="text-white/40 hover:text-white transition-colors">Terms of Service</a>
+              <a href="#" className="text-white/40 hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="text-white/40 hover:text-white transition-colors">Cookie Policy</a>
             </div>
           </div>
         </div>
@@ -279,7 +266,7 @@ const SoftwareCompanyFooter = () => {
       {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-full shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-110 z-50"
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-primary to-secondary text-white p-3 rounded-xl shadow-lg hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-300 transform hover:-translate-y-1 z-50"
       >
         <ArrowUp className="w-5 h-5" />
       </button>
@@ -287,4 +274,4 @@ const SoftwareCompanyFooter = () => {
   );
 };
 
-export default SoftwareCompanyFooter;
+export default SoftwareCompanyFooter;;
