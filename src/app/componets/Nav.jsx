@@ -44,9 +44,9 @@ const Nav = () => {
 
   return (
     <nav className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 w-[95%] max-w-7xl mx-auto ${
-      isScrolled 
-        ? 'bg-gray-900/80 backdrop-blur-xl shadow-2xl rounded-2xl border border-white/10' 
-        : 'bg-transparent rounded-none border-transparent'
+      isScrolled || isMenuOpen
+        ? 'bg-gray-900/90 backdrop-blur-xl shadow-2xl rounded-2xl border border-white/10' 
+        : 'bg-gray-900/60 md:bg-transparent backdrop-blur-md md:backdrop-blur-none rounded-2xl md:rounded-none border border-white/10 md:border-transparent'
     }`}>
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -55,31 +55,31 @@ const Nav = () => {
             <img
               src="/logo/mylogo/mv.png" 
               alt="Modulavers Systems" 
-              className="h-50 w-auto object-contain"
+              className="h-50 md:h-52 w-auto object-contain"
             />
             {/* <span className="ml-2 font-bold text-xl text-white">Modulavers</span> */}
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
             {navItems.map((item, index) => (
               <div key={item.name} className="relative group">
                 {item.dropdown ? (
                   <button
-                    className="flex items-center space-x-1 px-4 py-2 rounded-xl text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10"
+                    className="flex items-center space-x-1 px-2.5 py-1.5 lg:px-4 lg:py-2 rounded-xl text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10 text-xs lg:text-sm whitespace-nowrap"
                     onClick={() => handleDropdown(index)}
                     onMouseEnter={() => setActiveDropdown(index)}
                     onMouseLeave={() => setActiveDropdown(null)}
                   >
                     <span className="font-medium">{item.name}</span>
-                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${
                       activeDropdown === index ? 'rotate-180' : ''
                     }`} />
                   </button>
                 ) : (
                   <Link
                     href={item.href}
-                    className="flex items-center space-x-1 px-4 py-2 rounded-xl text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10"
+                    className="flex items-center space-x-1 px-2.5 py-1.5 lg:px-4 lg:py-2 rounded-xl text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10 text-xs lg:text-sm whitespace-nowrap"
                   >
                     <span className="font-medium">{item.name}</span>
                   </Link>
@@ -115,10 +115,10 @@ const Nav = () => {
           </div>
 
           {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
-            <a href="/#contact" className="group flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-all duration-300 hover:scale-105">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
+            <a href="/#contact" className="group flex items-center space-x-1.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-2 lg:px-6 lg:py-2.5 rounded-xl hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-all duration-300 hover:scale-105 whitespace-nowrap text-xs lg:text-sm">
               <span className="font-medium">Get Started</span>
-              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
+              <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform duration-200" />
             </a>
           </div>
 
@@ -140,7 +140,7 @@ const Nav = () => {
         {/* Mobile Menu */}
         <div className={`md:hidden transition-all duration-300 ease-in-out ${
           isMenuOpen 
-            ? 'max-h-[500px] opacity-100 pb-4' 
+            ? 'max-h-[80vh] opacity-100 pb-4 overflow-y-auto' 
             : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
           <div className="pt-4 space-y-2 bg-gray-900 rounded-xl p-4 border border-white/10">
