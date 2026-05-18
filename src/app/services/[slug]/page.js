@@ -43,16 +43,6 @@ const serviceData = {
     process: ['Concept Sketching', 'Digital Rendering', 'Revisions', 'Final Delivery'],
     techStack: ['Photoshop', 'Illustrator', 'InDesign', 'Canva']
   },
-  digital_marketing: {
-    name: 'Digital Marketing',
-    icon: Users,
-    description: 'Boost your online presence through strategic campaigns including social media marketing, Google Ads, email campaigns, influencer outreach, and performance tracking.',
-    features: ['Social Media Marketing', 'Google Ads', 'Email Campaigns', 'Analytics & Reporting'],
-    gradient: 'from-indigo-500 to-blue-500',
-    projects: '180+ Projects',
-    process: ['Market Research', 'Strategy Creation', 'Campaign Launch', 'Optimization'],
-    techStack: ['Google Ads', 'Facebook Ads Manager', 'Mailchimp', 'Google Analytics']
-  },
   seo: {
     name: 'SEO',
     icon: Earth,

@@ -24,7 +24,6 @@ export default function OrdersPage() {
     'UI/UX Designing',
     'Video Editing',
     'Graphic Designing',
-    'Digital Marketing',
     'SEO'
   ];
 

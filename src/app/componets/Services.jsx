@@ -51,17 +51,6 @@ const ServicesSection = () => {
             projects: '250+ Projects'
         },
         {
-            name: 'Digital Marketing',
-            href: '/services/digital_marketing',
-            icon: Users,
-            description: 'Boost your online presence through strategic campaigns including social media marketing, Google Ads, email campaigns, influencer outreach, and performance tracking.',
-            features: ['Social Media Marketing', 'Google Ads', 'Email Campaigns', 'Analytics & Reporting'],
-            gradient: 'from-indigo-500 to-blue-500',
-            price: 'Starting at $1,499',
-            duration: '2-6 weeks',
-            projects: '180+ Projects'
-        },
-        {
             name: 'SEO',
             href: '/services/seo',
             icon: Earth,

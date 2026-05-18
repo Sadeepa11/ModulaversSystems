@@ -26,7 +26,6 @@ const Nav = () => {
         { name: 'UI/UX designing', href: '/services/ui', icon: BrushIcon },
         { name: 'Video Editting', href: '/services/video', icon: Video },
         { name: 'Graphic Designing', href: '/services/graphic', icon: Image },
-        { name: 'Digital Marketing', href: '/services/digital_marketing', icon: Users },
         { name: 'SEO', href: '/services/seo', icon: EarthIcon }
       ]
     },
