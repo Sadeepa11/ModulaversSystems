@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import dbConnect from '@/lib/mongodb';
+import Project from '@/models/Project';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
 const dbPath = path.join(process.cwd(), 'src', 'data', 'projects.json');
 
-function readData() {
+function readJsonData() {
   try {
-    if (!fs.existsSync(dbPath)) {
-      return { projects: [] };
-    }
+    if (!fs.existsSync(dbPath)) return { projects: [] };
     const content = fs.readFileSync(dbPath, 'utf8');
     return JSON.parse(content);
   } catch (error) {
@@ -17,30 +17,39 @@ function readData() {
   }
 }
 
-function writeData(data) {
+function writeJsonData(data) {
   try {
     const dir = path.dirname(dbPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
   } catch (err) {
-    console.warn('Cannot write to file system in serverless environment:', err.message);
+    console.warn('File system write skipped:', err.message);
   }
 }
 
 export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
-    const data = readData();
-    const index = data.projects.findIndex(p => p.id === id);
 
-    if (index === -1) {
-      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+    if (process.env.MONGODB_URI) {
+      try {
+        await dbConnect();
+        const deletedProject = await Project.findByIdAndDelete(id);
+        if (deletedProject) {
+          return NextResponse.json({ success: true, message: 'Project deleted successfully' });
+        }
+      } catch (err) {
+        console.warn('MongoDB delete fallback to JSON:', err.message);
+      }
     }
 
-    data.projects.splice(index, 1);
-    writeData(data);
+    // JSON Fallback
+    const data = readJsonData();
+    const index = data.projects.findIndex(p => p.id === id);
+    if (index !== -1) {
+      data.projects.splice(index, 1);
+      writeJsonData(data);
+    }
 
     return NextResponse.json({ success: true, message: 'Project deleted successfully' });
   } catch (error) {
@@ -51,15 +60,29 @@ export async function DELETE(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     const { id } = await params;
-    const data = readData();
-    const index = data.projects.findIndex(p => p.id === id);
+    const formData = await request.formData();
 
-    if (index === -1) {
-      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+    let existingProject = null;
+    let isMongo = false;
+
+    if (process.env.MONGODB_URI) {
+      try {
+        await dbConnect();
+        existingProject = await Project.findById(id);
+        if (existingProject) isMongo = true;
+      } catch (err) {
+        console.warn('MongoDB fetch fallback to JSON:', err.message);
+      }
     }
 
-    const existingProject = data.projects[index];
-    const formData = await request.formData();
+    if (!existingProject) {
+      const data = readJsonData();
+      existingProject = data.projects.find(p => p.id === id);
+    }
+
+    if (!existingProject) {
+      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+    }
 
     const title = formData.get('title') || existingProject.title;
     const type = formData.get('type') || existingProject.type;
@@ -78,9 +101,8 @@ export async function PUT(request, { params }) {
     let imageUrls = [...(existingProject.images || [])];
     const newImageFiles = formData.getAll('images');
 
-    // Handle new uploads if provided
     if (newImageFiles && newImageFiles.length > 0 && newImageFiles[0]?.name) {
-      const folderPath = `modulavers/projects/${type}/${existingProject.slug}`;
+      const folderPath = `modulavers/projects/${type}/${existingProject.slug || 'project'}`;
       const uploadedUrls = [];
 
       for (let i = 0; i < newImageFiles.length; i++) {
@@ -104,8 +126,7 @@ export async function PUT(request, { params }) {
       }
     }
 
-    const updatedProject = {
-      ...existingProject,
+    const updateFields = {
       title,
       type,
       category,
@@ -115,13 +136,24 @@ export async function PUT(request, { params }) {
       projectLink,
       githubLink,
       images: imageUrls,
-      featured
+      featured,
     };
 
-    data.projects[index] = updatedProject;
-    writeData(data);
+    if (isMongo) {
+      const updatedProject = await Project.findByIdAndUpdate(id, updateFields, { new: true });
+      return NextResponse.json({ success: true, project: updatedProject });
+    }
 
-    return NextResponse.json({ success: true, project: updatedProject });
+    // JSON Fallback
+    const data = readJsonData();
+    const index = data.projects.findIndex(p => p.id === id);
+    if (index !== -1) {
+      data.projects[index] = { ...data.projects[index], ...updateFields };
+      writeJsonData(data);
+      return NextResponse.json({ success: true, project: data.projects[index] });
+    }
+
+    return NextResponse.json({ success: false, error: 'Project update failed' }, { status: 400 });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

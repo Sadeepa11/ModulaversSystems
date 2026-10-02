@@ -15,6 +15,7 @@
     "framer-motion": "^12.15.0",
     "gsap": "^3.13.0",
     "lucide-react": "^0.511.0",
+    "mongoose": "^9.10.3",
     "next": "^15.5.7",
     "postcss": "^8.5.6",
     "react": "^19.0.0",

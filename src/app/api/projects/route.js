@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import dbConnect from '@/lib/mongodb';
+import Project from '@/models/Project';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
 const dbPath = path.join(process.cwd(), 'src', 'data', 'projects.json');
 
-function readData() {
+function readJsonData() {
   try {
-    if (!fs.existsSync(dbPath)) {
-      return { projects: [] };
-    }
+    if (!fs.existsSync(dbPath)) return { projects: [] };
     const content = fs.readFileSync(dbPath, 'utf8');
     return JSON.parse(content);
   } catch (error) {
@@ -17,20 +17,29 @@ function readData() {
   }
 }
 
-function writeData(data) {
+function writeJsonData(data) {
   try {
     const dir = path.dirname(dbPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
   } catch (err) {
-    console.warn('Cannot write to file system in serverless environment:', err.message);
+    console.warn('File system write skipped:', err.message);
   }
 }
 
 export async function GET() {
-  const data = readData();
+  try {
+    if (process.env.MONGODB_URI) {
+      await dbConnect();
+      const projects = await Project.find({}).sort({ createdAt: -1 });
+      return NextResponse.json({ projects });
+    }
+  } catch (err) {
+    console.warn('MongoDB connection fallback to JSON:', err.message);
+  }
+
+  // Fallback to JSON file if MONGODB_URI is not set
+  const data = readJsonData();
   return NextResponse.json(data);
 }
 
@@ -39,7 +48,7 @@ export async function POST(request) {
     const formData = await request.formData();
     const title = formData.get('title') || '';
     let slug = formData.get('slug') || '';
-    const type = formData.get('type') || 'web'; // 'web' or 'app'
+    const type = formData.get('type') || 'web';
     const category = formData.get('category') || '';
     const client = formData.get('client') || '';
     const description = formData.get('description') || '';
@@ -54,9 +63,9 @@ export async function POST(request) {
 
     const technologies = technologiesStr.split(',').map(t => t.trim()).filter(Boolean);
 
+    // Upload Images to Cloudinary
     const imageFiles = formData.getAll('images');
     const imageUrls = [];
-
     const folderPath = `modulavers/projects/${type}/${slug}`;
 
     for (let i = 0; i < imageFiles.length; i++) {
@@ -66,19 +75,17 @@ export async function POST(request) {
         const buffer = Buffer.from(bytes);
 
         try {
-          // Upload directly to Cloudinary
           const cUrl = await uploadToCloudinary(buffer, folderPath);
           imageUrls.push(cUrl);
         } catch (cErr) {
-          console.warn('Cloudinary upload error, falling back to base64:', cErr.message);
+          console.warn('Cloudinary upload fallback to Base64:', cErr.message);
           const mimeType = file.type || 'image/jpeg';
           imageUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
         }
       }
     }
 
-    const newProject = {
-      id: `proj-${Date.now()}`,
+    const projectData = {
       title,
       slug,
       type,
@@ -90,12 +97,28 @@ export async function POST(request) {
       githubLink,
       images: imageUrls,
       featured,
-      createdAt: new Date().toISOString().split('T')[0]
     };
 
-    const data = readData();
+    // Save to MongoDB if MONGODB_URI is configured
+    if (process.env.MONGODB_URI) {
+      try {
+        await dbConnect();
+        const newProject = await Project.create(projectData);
+        return NextResponse.json({ success: true, project: newProject }, { status: 201 });
+      } catch (dbErr) {
+        console.warn('MongoDB save fallback to JSON:', dbErr.message);
+      }
+    }
+
+    // JSON Fallback
+    const newProject = {
+      id: `proj-${Date.now()}`,
+      ...projectData,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    const data = readJsonData();
     data.projects.unshift(newProject);
-    writeData(data);
+    writeJsonData(data);
 
     return NextResponse.json({ success: true, project: newProject }, { status: 201 });
   } catch (error) {
