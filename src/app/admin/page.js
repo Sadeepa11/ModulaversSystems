@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Edit3, Image as ImageIcon, Folder, Globe, Smartphone, Sparkles, Check, X, Upload, Loader2, CloudUpload, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Edit3, Image as ImageIcon, Folder, Globe, Smartphone, Sparkles, Check, X, Upload, Loader2, CloudUpload, CheckCircle2, Star } from 'lucide-react';
 
 export default function AdminPage() {
   const [projects, setProjects] = useState([]);
@@ -107,6 +107,16 @@ export default function AdminPage() {
 
   const removeImage = (indexToRemove) => {
     setUploadedImageUrls((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  // Set any uploaded image as the Main Primary Cover Image (move to index 0)
+  const setPrimaryCover = (indexToMakePrimary) => {
+    if (indexToMakePrimary === 0) return;
+    setUploadedImageUrls((prev) => {
+      const copy = [...prev];
+      const [selected] = copy.splice(indexToMakePrimary, 1);
+      return [selected, ...copy];
+    });
   };
 
   const openAddModal = () => {
@@ -567,30 +577,61 @@ export default function AdminPage() {
                   </div>
                 )}
 
-                {/* Uploaded Cloudinary Image Previews */}
+                {/* Uploaded Cloudinary Image Previews & Main Cover Selection */}
                 {uploadedImageUrls.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-2 flex items-center justify-between">
-                      <span>Uploaded Cloudinary Images ({uploadedImageUrls.length}):</span>
-                      <span className="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Ready to Save
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-xs font-medium text-slate-300">
+                        Uploaded Images ({uploadedImageUrls.length}):
+                      </label>
+                      <span className="text-[10px] text-amber-400 font-medium flex items-center gap-1 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> First image (★) is Main Cover
                       </span>
-                    </label>
-                    <div className="flex flex-wrap gap-2.5">
+                    </div>
+
+                    <p className="text-[11px] text-slate-500 mb-3">
+                      Click the <span className="text-amber-400">★ Star</span> on any image to set it as the Primary Cover Image for product cards.
+                    </p>
+
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
                       {uploadedImageUrls.map((url, idx) => (
-                        <div key={idx} className="w-20 h-20 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 relative group">
-                          <img src={url} alt="Uploaded Cloudinary" className="w-full h-full object-cover" />
+                        <div
+                          key={idx}
+                          className={`relative rounded-xl overflow-hidden bg-slate-950 border transition-all group ${
+                            idx === 0
+                              ? 'border-2 border-amber-400 shadow-lg shadow-amber-500/20 ring-2 ring-amber-400/30'
+                              : 'border-slate-800 hover:border-slate-600'
+                          }`}
+                        >
+                          <div className="h-24 w-full">
+                            <img src={url} alt={`Uploaded ${idx + 1}`} className="w-full h-full object-cover" />
+                          </div>
+
+                          {/* Cover Badge / Star Button */}
+                          {idx === 0 ? (
+                            <div className="absolute top-1 left-1 bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded-md text-[9px] font-extrabold flex items-center gap-0.5 shadow-md">
+                              <Star className="w-2.5 h-2.5 fill-slate-950" /> COVER
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setPrimaryCover(idx)}
+                              className="absolute top-1 left-1 bg-slate-900/90 hover:bg-amber-500 text-slate-300 hover:text-slate-950 px-1.5 py-0.5 rounded-md text-[9px] font-bold flex items-center gap-0.5 opacity-90 group-hover:opacity-100 transition-all border border-slate-700"
+                              title="Set as Main Cover Image"
+                            >
+                              <Star className="w-2.5 h-2.5" /> Make Cover
+                            </button>
+                          )}
+
+                          {/* Delete Button */}
                           <button
                             type="button"
                             onClick={() => removeImage(idx)}
-                            className="absolute top-1 right-1 bg-red-600/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-1 right-1 bg-red-600/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
                             title="Remove Image"
                           >
                             <X className="w-3 h-3" />
                           </button>
-                          <span className="absolute bottom-1 left-1 bg-emerald-500/90 text-white p-0.5 rounded-full">
-                            <CheckCircle2 className="w-3 h-3" />
-                          </span>
                         </div>
                       ))}
                     </div>
