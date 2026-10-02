@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { Code, Brush, Video, Image, Users, Earth, Star, ArrowRight, CheckCircle, Sparkles } from 'lucide-react';
+import { Code, Brush, Video, Image, Users, Earth, Star, ArrowRight, CheckCircle, Sparkles, Smartphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ServiceCard from './ServiceCard'; // Import the separate card component
 
@@ -16,6 +16,17 @@ const ServicesSection = () => {
             price: 'Starting at $2,999',
             duration: '2-4 weeks',
             projects: '150+ Projects'
+        },
+        {
+            name: 'Mobile Application Development',
+            href: '/services/app',
+            icon: Smartphone,
+            description: 'We build high-performance, feature-rich iOS and Android mobile applications using React Native and Flutter, providing seamless user experiences.',
+            features: ['iOS & Android Apps', 'Cross-Platform', 'Smooth UI/UX', 'API Integration'],
+            gradient: 'from-cyan-500 to-blue-600',
+            price: 'Starting at $3,499',
+            duration: '3-6 weeks',
+            projects: '100+ Projects'
         },
         {
             name: 'UI/UX Designing',

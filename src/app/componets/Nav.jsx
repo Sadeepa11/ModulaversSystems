@@ -1,10 +1,12 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, Code, Zap, Users, Phone, ArrowRight, Video, BrushIcon, EarthIcon, Image } from 'lucide-react';
+import { Menu, X, ChevronDown, Code, Zap, Users, Phone, ArrowRight, Video, BrushIcon, EarthIcon, Image, Smartphone } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const Nav = () => {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -17,18 +19,24 @@ const Nav = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  if (pathname && pathname.startsWith('/admin')) {
+    return null;
+  }
+
   const navItems = [
     { name: 'Home', href: '/' },
     { 
       name: 'Services', 
       dropdown: [
         { name: 'Web Development', href: '/services/web', icon: Code },
+        { name: 'Mobile Application Development', href: '/services/app', icon: Smartphone },
         { name: 'UI/UX designing', href: '/services/ui', icon: BrushIcon },
         { name: 'Video Editting', href: '/services/video', icon: Video },
         { name: 'Graphic Designing', href: '/services/graphic', icon: Image },
         { name: 'SEO', href: '/services/seo', icon: EarthIcon }
       ]
     },
+    { name: 'Projects', href: '/projects' },
     { name: 'Team', href: '/team' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },

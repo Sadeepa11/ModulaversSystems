@@ -1,5 +1,5 @@
 import React from 'react';
-import { Code, Brush, Video, Image, Users, Earth, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Code, Brush, Video, Image, Users, Earth, CheckCircle, ArrowLeft, Smartphone } from 'lucide-react';
 import Link from 'next/link';
 
 const serviceData = {
@@ -12,6 +12,16 @@ const serviceData = {
     projects: '150+ Projects',
     process: ['Discovery & Planning', 'UI/UX Design', 'Development', 'Testing & Launch'],
     techStack: ['React', 'Next.js', 'Node.js', 'TailwindCSS', 'MongoDB']
+  },
+  app: {
+    name: 'Mobile Application Development',
+    icon: Smartphone,
+    description: 'We build high-performance, feature-rich iOS and Android mobile applications using React Native and Flutter, providing seamless user experiences.',
+    features: ['iOS & Android Apps', 'Cross-Platform Development', 'Smooth UI/UX', 'API Integration'],
+    gradient: 'from-cyan-500 to-blue-600',
+    projects: '100+ Projects',
+    process: ['Requirement Analysis', 'App Architecture', 'UI/UX Design', 'Development & Testing', 'App Store Publishing'],
+    techStack: ['React Native', 'Flutter', 'iOS', 'Android', 'Firebase', 'Node.js']
   },
   ui: {
     name: 'UI/UX Designing',
