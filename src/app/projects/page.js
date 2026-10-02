@@ -198,114 +198,148 @@ export default function ProjectsPortfolioPage() {
 
       {/* Project Detail Gallery Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative my-8">
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedProject(null)}
-              className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black text-white p-2 rounded-full border border-white/20 transition-all"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Image Slider Header */}
-            <div className="relative h-80 sm:h-96 bg-black flex items-center justify-center overflow-hidden">
-              {selectedProject.images && selectedProject.images.length > 0 ? (
-                <img
-                  src={selectedProject.images[activeImageIndex]}
-                  alt={selectedProject.title}
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <div className="text-white/40">No images to display</div>
-              )}
-
-              {/* Prev / Next controls */}
-              {selectedProject.images && selectedProject.images.length > 1 && (
-                <>
-                  <button
-                    onClick={() =>
-                      setActiveImageIndex((prev) => (prev === 0 ? selectedProject.images.length - 1 : prev - 1))
-                    }
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black p-2 rounded-full text-white border border-white/10"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() =>
-                      setActiveImageIndex((prev) => (prev === selectedProject.images.length - 1 ? 0 : prev + 1))
-                    }
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black p-2 rounded-full text-white border border-white/10"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Image Thumbnails */}
-            {selectedProject.images && selectedProject.images.length > 1 && (
-              <div className="flex gap-2 p-4 bg-slate-950/80 border-b border-white/10 overflow-x-auto justify-center">
-                {selectedProject.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImageIndex(idx)}
-                    className={`w-16 h-12 rounded-lg overflow-hidden border-2 transition-all ${
-                      activeImageIndex === idx ? 'border-blue-500 scale-105' : 'border-transparent opacity-60'
-                    }`}
-                  >
-                    <img src={img} alt="thumb" className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Project Details */}
-            <div className="p-6 sm:p-8">
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                <div>
-                  <span className="text-xs font-semibold text-blue-400 uppercase tracking-widest">
-                    {selectedProject.category || selectedProject.type}
-                  </span>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">{selectedProject.title}</h2>
-                </div>
-                {selectedProject.client && (
-                  <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-right">
-                    <span className="text-[10px] text-white/50 block">CLIENT</span>
-                    <span className="text-sm font-semibold text-white/90">{selectedProject.client}</span>
-                  </div>
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl relative my-auto max-h-[92vh] flex flex-col">
+            {/* Modal Header Bar */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950/60 backdrop-blur-md shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-semibold rounded-full border border-blue-500/20 uppercase tracking-wider">
+                  {selectedProject.type === 'web' ? 'Web Application' : 'Mobile Application'}
+                </span>
+                {selectedProject.category && (
+                  <span className="text-xs text-white/50">• {selectedProject.category}</span>
                 )}
               </div>
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full border border-white/10 transition-all"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-              <p className="text-white/70 text-sm sm:text-base leading-relaxed mb-6">
-                {selectedProject.description}
-              </p>
+            {/* Modal Body - 2 Column Split Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 overflow-y-auto divide-y lg:divide-y-0 lg:divide-x divide-white/10 flex-1">
+              {/* Left Column: Image Gallery Slider (7 Columns) */}
+              <div className="lg:col-span-7 bg-black/50 p-6 flex flex-col justify-between">
+                <div>
+                  {/* Large Main Preview */}
+                  <div className="relative h-72 sm:h-96 rounded-2xl bg-black overflow-hidden flex items-center justify-center border border-white/10 shadow-inner group">
+                    {selectedProject.images && selectedProject.images.length > 0 ? (
+                      <img
+                        src={selectedProject.images[activeImageIndex]}
+                        alt={selectedProject.title}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="text-white/30 flex flex-col items-center">
+                        <ImageIcon className="w-12 h-12 mb-2" />
+                        <span className="text-xs">No preview available</span>
+                      </div>
+                    )}
 
-              {/* Technologies */}
-              {selectedProject.technologies && selectedProject.technologies.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="text-xs font-semibold text-white/40 uppercase mb-2">Technologies Used</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProject.technologies.map((tech, idx) => (
-                      <span key={idx} className="bg-blue-500/10 text-blue-300 border border-blue-500/20 text-xs px-3 py-1 rounded-full font-medium">
-                        {tech}
-                      </span>
-                    ))}
+                    {/* Prev / Next controls */}
+                    {selectedProject.images && selectedProject.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={() =>
+                            setActiveImageIndex((prev) => (prev === 0 ? selectedProject.images.length - 1 : prev - 1))
+                          }
+                          className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black p-2.5 rounded-full text-white border border-white/20 transition-all shadow-lg"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() =>
+                            setActiveImageIndex((prev) => (prev === selectedProject.images.length - 1 ? 0 : prev + 1))
+                          }
+                          className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black p-2.5 rounded-full text-white border border-white/20 transition-all shadow-lg"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                      </>
+                    )}
                   </div>
-                </div>
-              )}
 
-              {/* External Links */}
-              {(selectedProject.projectLink || selectedProject.githubLink) && (
-                <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
+                  {/* Image Thumbnails Grid */}
+                  {selectedProject.images && selectedProject.images.length > 1 && (
+                    <div className="flex gap-2.5 mt-4 overflow-x-auto pb-2">
+                      {selectedProject.images.map((img, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setActiveImageIndex(idx)}
+                          className={`w-20 h-14 rounded-xl overflow-hidden border-2 transition-all relative shrink-0 ${
+                            activeImageIndex === idx
+                              ? 'border-blue-500 scale-105 shadow-md shadow-blue-500/20 ring-2 ring-blue-500/30'
+                              : 'border-white/10 opacity-60 hover:opacity-100'
+                          }`}
+                        >
+                          <img src={img} alt="thumbnail" className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-[11px] text-white/40 mt-4 text-center">
+                  Click arrows or thumbnails to inspect project screenshots.
+                </div>
+              </div>
+
+              {/* Right Column: Details & Actions (5 Columns) */}
+              <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between space-y-6">
+                <div className="space-y-6">
+                  {/* Title & Metadata */}
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                      {selectedProject.title}
+                    </h2>
+
+                    {selectedProject.client && (
+                      <div className="mt-3 inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-xl text-xs">
+                        <span className="text-white/40 font-medium">CLIENT:</span>
+                        <span className="text-white font-semibold">{selectedProject.client}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">About Project</h4>
+                    <p className="text-white/80 text-sm leading-relaxed whitespace-pre-line">
+                      {selectedProject.description || 'No detailed description provided for this project.'}
+                    </p>
+                  </div>
+
+                  {/* Technologies */}
+                  {selectedProject.technologies && selectedProject.technologies.length > 0 && (
+                    <div>
+                      <h4 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2.5">Technologies Used</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProject.technologies.map((tech, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-blue-500/10 text-blue-300 border border-blue-500/20 text-xs px-3 py-1 rounded-full font-medium"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* External Action Links */}
+                <div className="pt-6 border-t border-white/10 space-y-3">
                   {selectedProject.projectLink && (
                     <a
                       href={selectedProject.projectLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/20"
+                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold py-3 rounded-xl transition-all shadow-lg shadow-blue-500/25"
                     >
-                      <ExternalLink className="w-4 h-4" /> Live Preview
+                      <ExternalLink className="w-4 h-4" /> Visit Live Website / App
                     </a>
                   )}
                   {selectedProject.githubLink && (
@@ -313,13 +347,13 @@ export default function ProjectsPortfolioPage() {
                       href={selectedProject.githubLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all border border-white/10"
+                      className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold py-3 rounded-xl transition-all border border-white/10"
                     >
-                      View Code / GitHub
+                      View Source Code on GitHub
                     </a>
                   )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
