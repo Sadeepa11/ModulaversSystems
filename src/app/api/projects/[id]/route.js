@@ -17,11 +17,15 @@ function readData() {
 }
 
 function writeData(data) {
-  const dir = path.dirname(dbPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    const dir = path.dirname(dbPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.warn('Cannot write to file system in serverless environment:', err.message);
   }
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
 }
 
 export async function DELETE(request, { params }) {
@@ -36,11 +40,15 @@ export async function DELETE(request, { params }) {
 
     const projectToDelete = data.projects[index];
 
-    // Remove image folder if exists
+    // Remove image folder if exists and writable
     if (projectToDelete.type && projectToDelete.slug) {
-      const folderPath = path.join(process.cwd(), 'public', 'images', 'projects', projectToDelete.type, projectToDelete.slug);
-      if (fs.existsSync(folderPath)) {
-        fs.rmSync(folderPath, { recursive: true, force: true });
+      try {
+        const folderPath = path.join(process.cwd(), 'public', 'images', 'projects', projectToDelete.type, projectToDelete.slug);
+        if (fs.existsSync(folderPath)) {
+          fs.rmSync(folderPath, { recursive: true, force: true });
+        }
+      } catch (err) {
+        console.warn('Skipping folder deletion on read-only system:', err.message);
       }
     }
 
@@ -84,8 +92,13 @@ export async function PUT(request, { params }) {
     // Handle new uploads if provided
     if (newImageFiles && newImageFiles.length > 0 && newImageFiles[0]?.name) {
       const targetDir = path.join(process.cwd(), 'public', 'images', 'projects', type, existingProject.slug);
-      if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true });
+      let canWriteToDisk = true;
+      try {
+        if (!fs.existsSync(targetDir)) {
+          fs.mkdirSync(targetDir, { recursive: true });
+        }
+      } catch (e) {
+        canWriteToDisk = false;
       }
 
       const uploadedUrls = [];
@@ -99,10 +112,19 @@ export async function PUT(request, { params }) {
           const baseName = path.basename(file.name, ext).toLowerCase().replace(/[^a-z0-9]+/g, '-');
           const filename = `${Date.now()}-${i + 1}-${baseName}${ext}`;
 
-          const filePath = path.join(targetDir, filename);
-          fs.writeFileSync(filePath, buffer);
-
-          uploadedUrls.push(`/images/projects/${type}/${existingProject.slug}/${filename}`);
+          if (canWriteToDisk) {
+            try {
+              const filePath = path.join(targetDir, filename);
+              fs.writeFileSync(filePath, buffer);
+              uploadedUrls.push(`/images/projects/${type}/${existingProject.slug}/${filename}`);
+            } catch (wErr) {
+              const mimeType = file.type || 'image/jpeg';
+              uploadedUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
+            }
+          } else {
+            const mimeType = file.type || 'image/jpeg';
+            uploadedUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
+          }
         }
       }
 

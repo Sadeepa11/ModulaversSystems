@@ -17,11 +17,15 @@ function readData() {
 }
 
 function writeData(data) {
-  const dir = path.dirname(dbPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    const dir = path.dirname(dbPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.warn('Cannot write to file system in serverless environment:', err.message);
   }
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
 }
 
 export async function GET() {
@@ -47,10 +51,16 @@ export async function POST(request) {
 
     const technologies = technologiesStr.split(',').map(t => t.trim()).filter(Boolean);
 
-    // Prepare directory for images
+    // Prepare directory for images if supported
     const targetDir = path.join(process.cwd(), 'public', 'images', 'projects', type, slug);
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
+    let canWriteToDisk = true;
+    try {
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+      }
+    } catch (e) {
+      canWriteToDisk = false;
+      console.warn('Local directory creation skipped (read-only filesystem):', e.message);
     }
 
     const imageFiles = formData.getAll('images');
@@ -62,15 +72,25 @@ export async function POST(request) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
         
-        // Clean filename
         const ext = path.extname(file.name) || '.jpg';
         const baseName = path.basename(file.name, ext).toLowerCase().replace(/[^a-z0-9]+/g, '-');
         const filename = `${i + 1}-${baseName}${ext}`;
-        
-        const filePath = path.join(targetDir, filename);
-        fs.writeFileSync(filePath, buffer);
 
-        imageUrls.push(`/images/projects/${type}/${slug}/${filename}`);
+        if (canWriteToDisk) {
+          try {
+            const filePath = path.join(targetDir, filename);
+            fs.writeFileSync(filePath, buffer);
+            imageUrls.push(`/images/projects/${type}/${slug}/${filename}`);
+          } catch (writeErr) {
+            // Fallback to Data URL for serverless environments
+            const mimeType = file.type || 'image/jpeg';
+            imageUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
+          }
+        } else {
+          // Serverless environment fallback
+          const mimeType = file.type || 'image/jpeg';
+          imageUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
+        }
       }
     }
 
