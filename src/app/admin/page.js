@@ -75,6 +75,8 @@ export default function AdminPage() {
       client: '',
       description: '',
       technologies: '',
+      projectLink: '',
+      githubLink: '',
       featured: false
     });
     setSelectedFiles([]);
@@ -92,6 +94,8 @@ export default function AdminPage() {
       client: project.client || '',
       description: project.description || '',
       technologies: (project.technologies || []).join(', '),
+      projectLink: project.projectLink || '',
+      githubLink: project.githubLink || '',
       featured: !!project.featured
     });
     setSelectedFiles([]);
@@ -112,6 +116,8 @@ export default function AdminPage() {
       body.append('client', formData.client);
       body.append('description', formData.description);
       body.append('technologies', formData.technologies);
+      body.append('projectLink', formData.projectLink || '');
+      body.append('githubLink', formData.githubLink || '');
       body.append('featured', formData.featured ? 'true' : 'false');
 
       selectedFiles.forEach((file) => {
@@ -404,10 +410,40 @@ export default function AdminPage() {
                   />
                 </div>
 
+                {/* Project Links (Optional) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-1">
+                      Live Project URL <span className="text-slate-500 font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="url"
+                      name="projectLink"
+                      value={formData.projectLink}
+                      onChange={handleInputChange}
+                      placeholder="https://example.com"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-300 mb-1">
+                      GitHub Repository URL <span className="text-slate-500 font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="url"
+                      name="githubLink"
+                      value={formData.githubLink}
+                      onChange={handleInputChange}
+                      placeholder="https://github.com/user/repository"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
                 {/* File Upload */}
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Upload Images (Multiple images allowed)
+                    Upload Images (Uploaded directly to Cloudinary)
                   </label>
                   <div className="border-2 border-dashed border-slate-800 hover:border-slate-700 bg-slate-950 rounded-xl p-4 text-center cursor-pointer relative">
                     <input
@@ -419,7 +455,7 @@ export default function AdminPage() {
                     />
                     <Upload className="w-8 h-8 text-slate-500 mx-auto mb-2" />
                     <p className="text-xs text-slate-400 font-medium">Click or drag & drop project images here</p>
-                    <p className="text-[10px] text-slate-600 mt-1">Images will be saved under public/images/projects/{formData.type}/{formData.slug || '<slug>'}/</p>
+                    <p className="text-[10px] text-slate-500 mt-1">Images are automatically uploaded to Cloudinary</p>
                   </div>
                 </div>
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 const dbPath = path.join(process.cwd(), 'src', 'data', 'projects.json');
 
@@ -43,6 +44,8 @@ export async function POST(request) {
     const client = formData.get('client') || '';
     const description = formData.get('description') || '';
     const technologiesStr = formData.get('technologies') || '';
+    const projectLink = formData.get('projectLink') || '';
+    const githubLink = formData.get('githubLink') || '';
     const featured = formData.get('featured') === 'true';
 
     if (!slug) {
@@ -51,43 +54,23 @@ export async function POST(request) {
 
     const technologies = technologiesStr.split(',').map(t => t.trim()).filter(Boolean);
 
-    // Prepare directory for images if supported
-    const targetDir = path.join(process.cwd(), 'public', 'images', 'projects', type, slug);
-    let canWriteToDisk = true;
-    try {
-      if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true });
-      }
-    } catch (e) {
-      canWriteToDisk = false;
-      console.warn('Local directory creation skipped (read-only filesystem):', e.message);
-    }
-
     const imageFiles = formData.getAll('images');
     const imageUrls = [];
+
+    const folderPath = `modulavers/projects/${type}/${slug}`;
 
     for (let i = 0; i < imageFiles.length; i++) {
       const file = imageFiles[i];
       if (file && typeof file === 'object' && file.name) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        
-        const ext = path.extname(file.name) || '.jpg';
-        const baseName = path.basename(file.name, ext).toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const filename = `${i + 1}-${baseName}${ext}`;
 
-        if (canWriteToDisk) {
-          try {
-            const filePath = path.join(targetDir, filename);
-            fs.writeFileSync(filePath, buffer);
-            imageUrls.push(`/images/projects/${type}/${slug}/${filename}`);
-          } catch (writeErr) {
-            // Fallback to Data URL for serverless environments
-            const mimeType = file.type || 'image/jpeg';
-            imageUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
-          }
-        } else {
-          // Serverless environment fallback
+        try {
+          // Upload directly to Cloudinary
+          const cUrl = await uploadToCloudinary(buffer, folderPath);
+          imageUrls.push(cUrl);
+        } catch (cErr) {
+          console.warn('Cloudinary upload error, falling back to base64:', cErr.message);
           const mimeType = file.type || 'image/jpeg';
           imageUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
         }
@@ -103,6 +86,8 @@ export async function POST(request) {
       client,
       description,
       technologies,
+      projectLink,
+      githubLink,
       images: imageUrls,
       featured,
       createdAt: new Date().toISOString().split('T')[0]

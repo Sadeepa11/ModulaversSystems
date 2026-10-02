@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 const dbPath = path.join(process.cwd(), 'src', 'data', 'projects.json');
 
@@ -38,20 +39,6 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
 
-    const projectToDelete = data.projects[index];
-
-    // Remove image folder if exists and writable
-    if (projectToDelete.type && projectToDelete.slug) {
-      try {
-        const folderPath = path.join(process.cwd(), 'public', 'images', 'projects', projectToDelete.type, projectToDelete.slug);
-        if (fs.existsSync(folderPath)) {
-          fs.rmSync(folderPath, { recursive: true, force: true });
-        }
-      } catch (err) {
-        console.warn('Skipping folder deletion on read-only system:', err.message);
-      }
-    }
-
     data.projects.splice(index, 1);
     writeData(data);
 
@@ -80,6 +67,8 @@ export async function PUT(request, { params }) {
     const client = formData.get('client') || existingProject.client;
     const description = formData.get('description') || existingProject.description;
     const technologiesStr = formData.get('technologies') || '';
+    const projectLink = formData.get('projectLink') !== null ? formData.get('projectLink') : (existingProject.projectLink || '');
+    const githubLink = formData.get('githubLink') !== null ? formData.get('githubLink') : (existingProject.githubLink || '');
     const featured = formData.get('featured') === 'true';
 
     const technologies = technologiesStr
@@ -91,37 +80,19 @@ export async function PUT(request, { params }) {
 
     // Handle new uploads if provided
     if (newImageFiles && newImageFiles.length > 0 && newImageFiles[0]?.name) {
-      const targetDir = path.join(process.cwd(), 'public', 'images', 'projects', type, existingProject.slug);
-      let canWriteToDisk = true;
-      try {
-        if (!fs.existsSync(targetDir)) {
-          fs.mkdirSync(targetDir, { recursive: true });
-        }
-      } catch (e) {
-        canWriteToDisk = false;
-      }
-
+      const folderPath = `modulavers/projects/${type}/${existingProject.slug}`;
       const uploadedUrls = [];
+
       for (let i = 0; i < newImageFiles.length; i++) {
         const file = newImageFiles[i];
         if (file && typeof file === 'object' && file.name) {
           const bytes = await file.arrayBuffer();
           const buffer = Buffer.from(bytes);
 
-          const ext = path.extname(file.name) || '.jpg';
-          const baseName = path.basename(file.name, ext).toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const filename = `${Date.now()}-${i + 1}-${baseName}${ext}`;
-
-          if (canWriteToDisk) {
-            try {
-              const filePath = path.join(targetDir, filename);
-              fs.writeFileSync(filePath, buffer);
-              uploadedUrls.push(`/images/projects/${type}/${existingProject.slug}/${filename}`);
-            } catch (wErr) {
-              const mimeType = file.type || 'image/jpeg';
-              uploadedUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
-            }
-          } else {
+          try {
+            const cUrl = await uploadToCloudinary(buffer, folderPath);
+            uploadedUrls.push(cUrl);
+          } catch (cErr) {
             const mimeType = file.type || 'image/jpeg';
             uploadedUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
           }
@@ -141,6 +112,8 @@ export async function PUT(request, { params }) {
       client,
       description,
       technologies,
+      projectLink,
+      githubLink,
       images: imageUrls,
       featured
     };

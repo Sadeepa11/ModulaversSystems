@@ -111,15 +111,9 @@ export default function ProjectsPortfolioPage() {
             <h3 className="text-xl font-semibold text-white/80">No Projects Found</h3>
             <p className="text-white/50 text-sm mt-1">
               {activeTab === 'all'
-                ? 'No projects added yet. Add projects from the Admin Panel!'
+                ? 'No projects available at the moment.'
                 : `No ${activeTab.toUpperCase()} projects available at the moment.`}
             </p>
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-2 mt-6 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all"
-            >
-              Go to Admin Panel
-            </Link>
           </div>
         ) : (
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -298,6 +292,32 @@ export default function ProjectsPortfolioPage() {
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* External Links */}
+              {(selectedProject.projectLink || selectedProject.githubLink) && (
+                <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
+                  {selectedProject.projectLink && (
+                    <a
+                      href={selectedProject.projectLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/20"
+                    >
+                      <ExternalLink className="w-4 h-4" /> Live Preview
+                    </a>
+                  )}
+                  {selectedProject.githubLink && (
+                    <a
+                      href={selectedProject.githubLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all border border-white/10"
+                    >
+                      View Code / GitHub
+                    </a>
+                  )}
                 </div>
               )}
             </div>
