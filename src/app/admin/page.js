@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit3, Image as ImageIcon, Folder, Globe, Smartphone, Sparkles, Check, X, Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Trash2, Edit3, Image as ImageIcon, Folder, Globe, Smartphone, Sparkles, Check, X, Upload, Loader2, CloudUpload, CheckCircle2 } from 'lucide-react';
 
 export default function AdminPage() {
   const [projects, setProjects] = useState([]);
@@ -298,13 +299,53 @@ export default function AdminPage() {
         {/* Add / Edit Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative">
+              {/* Animated Submitting Overlay */}
+              <AnimatePresence>
+                {submitting && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
+                  >
+                    <div className="relative mb-6">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                        className="w-20 h-20 border-4 border-blue-500/20 border-t-blue-500 rounded-full"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <CloudUpload className="w-8 h-8 text-blue-400 animate-bounce" />
+                      </div>
+                    </div>
+
+                    <motion.h3
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-xl font-bold text-white mb-2"
+                    >
+                      Uploading & Saving Project...
+                    </motion.h3>
+                    <p className="text-slate-400 text-xs max-w-xs leading-relaxed">
+                      Uploading images directly to Cloudinary and storing project details...
+                    </p>
+
+                    <div className="flex items-center gap-2 mt-6 bg-slate-900 px-4 py-2 rounded-full border border-slate-800 text-xs text-blue-400 font-medium">
+                      <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
+                      Processing Request
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
                 <h2 className="text-xl font-semibold text-white">
                   {editingProject ? 'Edit Project' : 'Add New Project'}
                 </h2>
                 <button
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => !submitting && setIsModalOpen(false)}
+                  disabled={submitting}
                   className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
                 >
                   <X className="w-5 h-5" />
@@ -485,9 +526,18 @@ export default function AdminPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors shadow-lg disabled:opacity-50"
+                    className="flex items-center gap-2 px-5 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors shadow-lg disabled:opacity-50"
                   >
-                    {submitting ? 'Saving...' : editingProject ? 'Update Project' : 'Save Project'}
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving to Cloudinary...
+                      </>
+                    ) : editingProject ? (
+                      'Update Project'
+                    ) : (
+                      'Save Project'
+                    )}
                   </button>
                 </div>
               </form>
