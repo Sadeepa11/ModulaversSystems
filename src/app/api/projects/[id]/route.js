@@ -37,9 +37,12 @@ export async function DELETE(request, { params }) {
         const deletedProject = await Project.findByIdAndDelete(id);
         if (deletedProject) {
           return NextResponse.json({ success: true, message: 'Project deleted successfully' });
+        } else {
+          return NextResponse.json({ success: false, error: 'Project not found in MongoDB' }, { status: 404 });
         }
       } catch (err) {
-        console.warn('MongoDB delete fallback to JSON:', err.message);
+        console.error('MongoDB DELETE Error:', err.message);
+        return NextResponse.json({ success: false, error: 'MongoDB Delete Failed: ' + err.message }, { status: 500 });
       }
     }
 
@@ -62,95 +65,119 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     const formData = await request.formData();
 
-    let existingProject = null;
-    let isMongo = false;
-
     if (process.env.MONGODB_URI) {
       try {
         await dbConnect();
-        existingProject = await Project.findById(id);
-        if (existingProject) isMongo = true;
-      } catch (err) {
-        console.warn('MongoDB fetch fallback to JSON:', err.message);
-      }
-    }
+        const existingProject = await Project.findById(id);
+        if (!existingProject) {
+          return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+        }
 
-    if (!existingProject) {
-      const data = readJsonData();
-      existingProject = data.projects.find(p => p.id === id);
-    }
+        const title = formData.get('title') || existingProject.title;
+        const type = formData.get('type') || existingProject.type;
+        const category = formData.get('category') || existingProject.category;
+        const client = formData.get('client') || existingProject.client;
+        const description = formData.get('description') || existingProject.description;
+        const technologiesStr = formData.get('technologies') || '';
+        const projectLink = formData.get('projectLink') !== null ? formData.get('projectLink') : (existingProject.projectLink || '');
+        const githubLink = formData.get('githubLink') !== null ? formData.get('githubLink') : (existingProject.githubLink || '');
+        const featured = formData.get('featured') === 'true';
 
-    if (!existingProject) {
-      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
-    }
+        const technologies = technologiesStr
+          ? technologiesStr.split(',').map(t => t.trim()).filter(Boolean)
+          : existingProject.technologies;
 
-    const title = formData.get('title') || existingProject.title;
-    const type = formData.get('type') || existingProject.type;
-    const category = formData.get('category') || existingProject.category;
-    const client = formData.get('client') || existingProject.client;
-    const description = formData.get('description') || existingProject.description;
-    const technologiesStr = formData.get('technologies') || '';
-    const projectLink = formData.get('projectLink') !== null ? formData.get('projectLink') : (existingProject.projectLink || '');
-    const githubLink = formData.get('githubLink') !== null ? formData.get('githubLink') : (existingProject.githubLink || '');
-    const featured = formData.get('featured') === 'true';
+        const rawImages = formData.getAll('images');
+        let imageUrls = [...(existingProject.images || [])];
 
-    const technologies = technologiesStr
-      ? technologiesStr.split(',').map(t => t.trim()).filter(Boolean)
-      : existingProject.technologies;
+        if (rawImages && rawImages.length > 0) {
+          const folderPath = `modulavers/projects/${type}/${existingProject.slug || 'project'}`;
+          const uploadedUrls = [];
 
-    const rawImages = formData.getAll('images');
-    let imageUrls = [...(existingProject.images || [])];
+          for (let i = 0; i < rawImages.length; i++) {
+            const item = rawImages[i];
+            if (typeof item === 'string' && item.trim()) {
+              uploadedUrls.push(item);
+            } else if (item && typeof item === 'object' && item.name) {
+              const bytes = await item.arrayBuffer();
+              const buffer = Buffer.from(bytes);
 
-    if (rawImages && rawImages.length > 0) {
-      const folderPath = `modulavers/projects/${type}/${existingProject.slug || 'project'}`;
-      const uploadedUrls = [];
+              try {
+                const cUrl = await uploadToCloudinary(buffer, folderPath);
+                uploadedUrls.push(cUrl);
+              } catch (cErr) {
+                const mimeType = item.type || 'image/jpeg';
+                uploadedUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
+              }
+            }
+          }
 
-      for (let i = 0; i < rawImages.length; i++) {
-        const item = rawImages[i];
-        if (typeof item === 'string' && item.trim()) {
-          uploadedUrls.push(item);
-        } else if (item && typeof item === 'object' && item.name) {
-          const bytes = await item.arrayBuffer();
-          const buffer = Buffer.from(bytes);
-
-          try {
-            const cUrl = await uploadToCloudinary(buffer, folderPath);
-            uploadedUrls.push(cUrl);
-          } catch (cErr) {
-            const mimeType = item.type || 'image/jpeg';
-            uploadedUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
+          if (uploadedUrls.length > 0) {
+            imageUrls = uploadedUrls;
           }
         }
+
+        const updateFields = {
+          title,
+          type,
+          category,
+          client,
+          description,
+          technologies,
+          projectLink,
+          githubLink,
+          images: imageUrls,
+          featured,
+        };
+
+        const updatedProject = await Project.findByIdAndUpdate(id, updateFields, { new: true });
+        return NextResponse.json({ success: true, project: updatedProject });
+      } catch (err) {
+        console.error('MongoDB PUT Error:', err.message);
+        return NextResponse.json({ success: false, error: 'MongoDB Update Failed: ' + err.message }, { status: 500 });
       }
-
-      if (uploadedUrls.length > 0) {
-        imageUrls = uploadedUrls;
-      }
-    }
-
-    const updateFields = {
-      title,
-      type,
-      category,
-      client,
-      description,
-      technologies,
-      projectLink,
-      githubLink,
-      images: imageUrls,
-      featured,
-    };
-
-    if (isMongo) {
-      const updatedProject = await Project.findByIdAndUpdate(id, updateFields, { new: true });
-      return NextResponse.json({ success: true, project: updatedProject });
     }
 
     // JSON Fallback
     const data = readJsonData();
     const index = data.projects.findIndex(p => p.id === id);
     if (index !== -1) {
-      data.projects[index] = { ...data.projects[index], ...updateFields };
+      const existingProject = data.projects[index];
+      const title = formData.get('title') || existingProject.title;
+      const type = formData.get('type') || existingProject.type;
+      const category = formData.get('category') || existingProject.category;
+      const client = formData.get('client') || existingProject.client;
+      const description = formData.get('description') || existingProject.description;
+      const technologiesStr = formData.get('technologies') || '';
+      const projectLink = formData.get('projectLink') !== null ? formData.get('projectLink') : (existingProject.projectLink || '');
+      const githubLink = formData.get('githubLink') !== null ? formData.get('githubLink') : (existingProject.githubLink || '');
+      const featured = formData.get('featured') === 'true';
+
+      const technologies = technologiesStr
+        ? technologiesStr.split(',').map(t => t.trim()).filter(Boolean)
+        : existingProject.technologies;
+
+      const rawImages = formData.getAll('images');
+      let imageUrls = [...(existingProject.images || [])];
+
+      if (rawImages && rawImages.length > 0) {
+        const uploadedUrls = rawImages.filter(item => typeof item === 'string' && item.trim());
+        if (uploadedUrls.length > 0) imageUrls = uploadedUrls;
+      }
+
+      data.projects[index] = {
+        ...existingProject,
+        title,
+        type,
+        category,
+        client,
+        description,
+        technologies,
+        projectLink,
+        githubLink,
+        images: imageUrls,
+        featured,
+      };
       writeJsonData(data);
       return NextResponse.json({ success: true, project: data.projects[index] });
     }

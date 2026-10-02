@@ -35,7 +35,8 @@ export async function GET() {
       return NextResponse.json({ projects });
     }
   } catch (err) {
-    console.warn('MongoDB connection fallback to JSON:', err.message);
+    console.error('MongoDB GET Error:', err.message);
+    return NextResponse.json({ success: false, error: 'MongoDB connection failed: ' + err.message }, { status: 500 });
   }
 
   // Fallback to JSON file if MONGODB_URI is not set
@@ -56,6 +57,10 @@ export async function POST(request) {
     const projectLink = formData.get('projectLink') || '';
     const githubLink = formData.get('githubLink') || '';
     const featured = formData.get('featured') === 'true';
+
+    if (!title) {
+      return NextResponse.json({ success: false, error: 'Project title is required' }, { status: 400 });
+    }
 
     if (!slug) {
       slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -108,11 +113,12 @@ export async function POST(request) {
         const newProject = await Project.create(projectData);
         return NextResponse.json({ success: true, project: newProject }, { status: 201 });
       } catch (dbErr) {
-        console.warn('MongoDB save fallback to JSON:', dbErr.message);
+        console.error('MongoDB Save Error:', dbErr);
+        return NextResponse.json({ success: false, error: 'MongoDB Save Failed: ' + dbErr.message }, { status: 500 });
       }
     }
 
-    // JSON Fallback
+    // JSON Fallback (Local Development Only)
     const newProject = {
       id: `proj-${Date.now()}`,
       ...projectData,
