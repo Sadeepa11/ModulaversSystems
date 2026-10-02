@@ -98,24 +98,26 @@ export async function PUT(request, { params }) {
       ? technologiesStr.split(',').map(t => t.trim()).filter(Boolean)
       : existingProject.technologies;
 
+    const rawImages = formData.getAll('images');
     let imageUrls = [...(existingProject.images || [])];
-    const newImageFiles = formData.getAll('images');
 
-    if (newImageFiles && newImageFiles.length > 0 && newImageFiles[0]?.name) {
+    if (rawImages && rawImages.length > 0) {
       const folderPath = `modulavers/projects/${type}/${existingProject.slug || 'project'}`;
       const uploadedUrls = [];
 
-      for (let i = 0; i < newImageFiles.length; i++) {
-        const file = newImageFiles[i];
-        if (file && typeof file === 'object' && file.name) {
-          const bytes = await file.arrayBuffer();
+      for (let i = 0; i < rawImages.length; i++) {
+        const item = rawImages[i];
+        if (typeof item === 'string' && item.trim()) {
+          uploadedUrls.push(item);
+        } else if (item && typeof item === 'object' && item.name) {
+          const bytes = await item.arrayBuffer();
           const buffer = Buffer.from(bytes);
 
           try {
             const cUrl = await uploadToCloudinary(buffer, folderPath);
             uploadedUrls.push(cUrl);
           } catch (cErr) {
-            const mimeType = file.type || 'image/jpeg';
+            const mimeType = item.type || 'image/jpeg';
             uploadedUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
           }
         }

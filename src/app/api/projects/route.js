@@ -63,15 +63,17 @@ export async function POST(request) {
 
     const technologies = technologiesStr.split(',').map(t => t.trim()).filter(Boolean);
 
-    // Upload Images to Cloudinary
-    const imageFiles = formData.getAll('images');
+    // Process images (either pre-uploaded Cloudinary URL strings or file objects)
+    const rawImages = formData.getAll('images');
     const imageUrls = [];
     const folderPath = `modulavers/projects/${type}/${slug}`;
 
-    for (let i = 0; i < imageFiles.length; i++) {
-      const file = imageFiles[i];
-      if (file && typeof file === 'object' && file.name) {
-        const bytes = await file.arrayBuffer();
+    for (let i = 0; i < rawImages.length; i++) {
+      const item = rawImages[i];
+      if (typeof item === 'string' && item.trim()) {
+        imageUrls.push(item);
+      } else if (item && typeof item === 'object' && item.name) {
+        const bytes = await item.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
         try {
@@ -79,7 +81,7 @@ export async function POST(request) {
           imageUrls.push(cUrl);
         } catch (cErr) {
           console.warn('Cloudinary upload fallback to Base64:', cErr.message);
-          const mimeType = file.type || 'image/jpeg';
+          const mimeType = item.type || 'image/jpeg';
           imageUrls.push(`data:${mimeType};base64,${buffer.toString('base64')}`);
         }
       }

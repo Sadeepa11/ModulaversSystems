@@ -25,6 +25,11 @@ export default function AdminPage() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
 
+  const [uploadedImageUrls, setUploadedImageUrls] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatusText, setUploadStatusText] = useState('');
+
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -58,12 +63,50 @@ export default function AdminPage() {
     }
   };
 
-  const handleFileChange = (e) => {
+  // Real-time Cloudinary image upload one-by-one with progress bar
+  const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
-    setSelectedFiles(files);
+    if (files.length === 0) return;
 
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setPreviewUrls(urls);
+    setUploadingImages(true);
+    setUploadProgress(0);
+
+    const folder = `modulavers/projects/${formData.type}/${formData.slug || 'project'}`;
+    const newUrls = [...uploadedImageUrls];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setUploadStatusText(`Uploading image ${i + 1} of ${files.length}: ${file.name}`);
+
+      try {
+        const fileFormData = new FormData();
+        fileFormData.append('file', file);
+        fileFormData.append('folder', folder);
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: fileFormData,
+        });
+
+        const data = await res.json();
+        if (data.success && data.url) {
+          newUrls.push(data.url);
+          setUploadedImageUrls([...newUrls]);
+        }
+      } catch (uploadErr) {
+        console.error('Error uploading file:', file.name, uploadErr);
+      }
+
+      const progress = Math.round(((i + 1) / files.length) * 100);
+      setUploadProgress(progress);
+    }
+
+    setUploadingImages(false);
+    setUploadStatusText('');
+  };
+
+  const removeImage = (indexToRemove) => {
+    setUploadedImageUrls((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
   const openAddModal = () => {
@@ -80,6 +123,7 @@ export default function AdminPage() {
       githubLink: '',
       featured: false
     });
+    setUploadedImageUrls([]);
     setSelectedFiles([]);
     setPreviewUrls([]);
     setIsModalOpen(true);
@@ -99,6 +143,7 @@ export default function AdminPage() {
       githubLink: project.githubLink || '',
       featured: !!project.featured
     });
+    setUploadedImageUrls(project.images || []);
     setSelectedFiles([]);
     setPreviewUrls(project.images || []);
     setIsModalOpen(true);
@@ -121,8 +166,8 @@ export default function AdminPage() {
       body.append('githubLink', formData.githubLink || '');
       body.append('featured', formData.featured ? 'true' : 'false');
 
-      selectedFiles.forEach((file) => {
-        body.append('images', file);
+      uploadedImageUrls.forEach((url) => {
+        body.append('images', url);
       });
 
       let res;
@@ -481,33 +526,71 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* File Upload */}
+                {/* File Upload & Cloudinary Real-time Progress Bar */}
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Upload Images (Uploaded directly to Cloudinary)
+                    Upload Images (Uploaded one-by-one directly to Cloudinary)
                   </label>
+
                   <div className="border-2 border-dashed border-slate-800 hover:border-slate-700 bg-slate-950 rounded-xl p-4 text-center cursor-pointer relative">
                     <input
                       type="file"
                       multiple
                       accept="image/*"
+                      disabled={uploadingImages}
                       onChange={handleFileChange}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
                     />
-                    <Upload className="w-8 h-8 text-slate-500 mx-auto mb-2" />
-                    <p className="text-xs text-slate-400 font-medium">Click or drag & drop project images here</p>
-                    <p className="text-[10px] text-slate-500 mt-1">Images are automatically uploaded to Cloudinary</p>
+                    <Upload className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                    <p className="text-xs text-slate-300 font-medium">Click or drag & drop project images to upload to Cloudinary</p>
+                    <p className="text-[10px] text-slate-500 mt-1">Images upload automatically in real-time</p>
                   </div>
                 </div>
 
-                {/* Image Previews */}
-                {previewUrls.length > 0 && (
+                {/* Progress Bar Container */}
+                {uploadingImages && (
+                  <div className="bg-slate-950 border border-blue-500/30 rounded-xl p-3.5 space-y-2">
+                    <div className="flex items-center justify-between text-xs text-blue-400 font-medium">
+                      <span className="flex items-center gap-1.5 truncate max-w-[80%]">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-400" />
+                        {uploadStatusText || 'Uploading to Cloudinary...'}
+                      </span>
+                      <span className="font-bold">{uploadProgress}%</span>
+                    </div>
+
+                    <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                      <div
+                        className="bg-gradient-to-r from-blue-600 to-indigo-500 h-full transition-all duration-300 rounded-full"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Uploaded Cloudinary Image Previews */}
+                {uploadedImageUrls.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-2">Selected / Existing Images:</label>
-                    <div className="flex flex-wrap gap-2">
-                      {previewUrls.map((url, idx) => (
-                        <div key={idx} className="w-16 h-16 rounded-lg overflow-hidden border border-slate-700 bg-slate-950">
-                          <img src={url} alt="preview" className="w-full h-full object-cover" />
+                    <label className="block text-xs font-medium text-slate-400 mb-2 flex items-center justify-between">
+                      <span>Uploaded Cloudinary Images ({uploadedImageUrls.length}):</span>
+                      <span className="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Ready to Save
+                      </span>
+                    </label>
+                    <div className="flex flex-wrap gap-2.5">
+                      {uploadedImageUrls.map((url, idx) => (
+                        <div key={idx} className="w-20 h-20 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 relative group">
+                          <img src={url} alt="Uploaded Cloudinary" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(idx)}
+                            className="absolute top-1 right-1 bg-red-600/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Remove Image"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <span className="absolute bottom-1 left-1 bg-emerald-500/90 text-white p-0.5 rounded-full">
+                            <CheckCircle2 className="w-3 h-3" />
+                          </span>
                         </div>
                       ))}
                     </div>
