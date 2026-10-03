@@ -25,7 +25,9 @@ import {
   ArrowLeft,
   LayoutDashboard,
   Home,
-  Menu
+  Menu,
+  Table as TableIcon,
+  Grid as GridIcon
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -36,9 +38,10 @@ export default function AdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Search & Filter State
+  // Search & Filter & View Mode State
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'web', 'app'
+  const [viewMode, setViewMode] = useState('table'); // 'table' or 'grid'
 
   // Form State
   const [formData, setFormData] = useState({
@@ -448,7 +451,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* Search & Filter Bar */}
+          {/* Search, Filter & View Mode Controls Bar */}
           <div className="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
             {/* Filter Tabs */}
             <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
@@ -471,28 +474,56 @@ export default function AdminPage() {
               ))}
             </div>
 
-            {/* Search Input Box */}
-            <div className="relative w-full sm:w-72">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search projects..."
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
-              />
-              {searchTerm && (
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              {/* View Mode Toggle Buttons */}
+              <div className="flex items-center bg-gray-100 p-1 rounded-xl border border-gray-200 shrink-0">
                 <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => setViewMode('table')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    viewMode === 'table'
+                      ? 'bg-white text-blue-600 shadow-sm font-bold'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                  title="Table View"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <TableIcon className="w-3.5 h-3.5" /> Table
                 </button>
-              )}
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    viewMode === 'grid'
+                      ? 'bg-white text-blue-600 shadow-sm font-bold'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                  title="Grid View"
+                >
+                  <GridIcon className="w-3.5 h-3.5" /> Grid
+                </button>
+              </div>
+
+              {/* Search Input Box */}
+              <div className="relative w-full sm:w-64">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search projects..."
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Projects Cards Grid (White Theme) */}
+          {/* Projects View Section */}
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -514,7 +545,125 @@ export default function AdminPage() {
                 <Plus className="w-4 h-4" /> Add Project Now
               </button>
             </div>
+          ) : viewMode === 'table' ? (
+            /* Data Table View */
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50/80 border-b border-gray-200 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                      <th className="py-3.5 px-4 sm:px-6">Preview</th>
+                      <th className="py-3.5 px-4 sm:px-6">Project Title & Client</th>
+                      <th className="py-3.5 px-4 sm:px-6">Type</th>
+                      <th className="py-3.5 px-4 sm:px-6">Technologies</th>
+                      <th className="py-3.5 px-4 sm:px-6">Live URL</th>
+                      <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 text-xs">
+                    {filteredProjects.map((proj) => (
+                      <tr key={proj.id} className="hover:bg-blue-50/30 transition-colors group">
+                        {/* Image Thumbnail */}
+                        <td className="py-3.5 px-4 sm:px-6">
+                          <div className="relative w-16 h-12 rounded-xl bg-gray-100 overflow-hidden border border-gray-200 shrink-0">
+                            {proj.images && proj.images.length > 0 ? (
+                              <img src={proj.images[0]} alt={proj.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                <ImageIcon className="w-5 h-5" />
+                              </div>
+                            )}
+                            {proj.images && proj.images.length > 1 && (
+                              <span className="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[9px] px-1 rounded font-medium">
+                                +{proj.images.length - 1}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Title & Info */}
+                        <td className="py-3.5 px-4 sm:px-6">
+                          <span className="font-bold text-gray-900 text-sm block group-hover:text-blue-600 transition-colors">
+                            {proj.title}
+                          </span>
+                          <div className="flex items-center gap-2 mt-0.5 text-gray-500 text-[11px]">
+                            {proj.category && <span className="font-medium text-blue-600">{proj.category}</span>}
+                            {proj.client && <span>• Client: {proj.client}</span>}
+                          </div>
+                        </td>
+
+                        {/* Type Badge */}
+                        <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                              proj.type === 'web'
+                                ? 'bg-purple-100 text-purple-700 border-purple-200'
+                                : 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                            }`}
+                          >
+                            {proj.type === 'web' ? <Globe className="w-3 h-3" /> : <Smartphone className="w-3 h-3" />}
+                            {proj.type.toUpperCase()}
+                          </span>
+                        </td>
+
+                        {/* Technologies */}
+                        <td className="py-3.5 px-4 sm:px-6">
+                          <div className="flex flex-wrap gap-1 max-w-xs">
+                            {proj.technologies && proj.technologies.length > 0 ? (
+                              proj.technologies.map((tech, idx) => (
+                                <span key={idx} className="bg-gray-100 text-gray-700 text-[10px] px-2 py-0.5 rounded-md font-medium border border-gray-200">
+                                  {tech}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-gray-400 text-[11px]">-</span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Live Link */}
+                        <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                          {proj.projectLink ? (
+                            <a
+                              href={proj.projectLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+                            >
+                              Visit <ExternalLink className="w-3 h-3" />
+                            </a>
+                          ) : (
+                            <span className="text-gray-400 text-[11px]">No link</span>
+                          )}
+                        </td>
+
+                        {/* Action Buttons */}
+                        <td className="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => openEditModal(proj)}
+                              className="p-1.5 bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-600 rounded-lg transition-colors border border-gray-200"
+                              title="Edit Project"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(proj.id)}
+                              className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors border border-rose-200"
+                              title="Delete Project"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           ) : (
+            /* Cards Grid View */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProjects.map((proj) => (
                 <div
