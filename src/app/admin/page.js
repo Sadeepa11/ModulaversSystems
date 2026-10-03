@@ -270,11 +270,11 @@ export default function AdminPage() {
   const appCount = projects.filter((p) => p.type === 'app').length;
 
   return (
-    <div className="min-h-screen flex bg-gray-50 -mt-16 font-sans">
+    <div className="h-screen w-full flex bg-gray-50 -mt-16 overflow-hidden font-sans">
       
-      {/* Sidebar (Main Dark Theme Style) */}
+      {/* Sidebar (Main Dark Theme Style - Max Height 100vh) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-slate-950 text-white border-r border-slate-800 flex flex-col justify-between p-5 transform transition-transform duration-300 md:translate-x-0 md:static shrink-0 ${
+        className={`fixed md:sticky top-0 left-0 z-40 w-64 h-screen max-h-screen bg-slate-950 text-white border-r border-slate-800 flex flex-col justify-between p-5 overflow-y-auto transform transition-transform duration-300 md:translate-x-0 shrink-0 ${
           mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -385,8 +385,8 @@ export default function AdminPage() {
         </div>
       </aside>
 
-      {/* Main Content Area (White Background Design) */}
-      <div className="flex-1 flex flex-col min-w-0 bg-gray-50 min-h-screen">
+      {/* Main Content Area (White Background Design - Independent Scroll) */}
+      <div className="flex-1 flex flex-col min-w-0 bg-gray-50 h-screen overflow-y-auto">
         
         {/* Top Header Bar for Main Content */}
         <header className="bg-white border-b border-gray-200/80 px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
