@@ -2,7 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Edit3, Image as ImageIcon, Folder, Globe, Smartphone, Sparkles, Check, X, Upload, Loader2, CloudUpload, CheckCircle2, Star } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Edit3,
+  Image as ImageIcon,
+  Folder,
+  Globe,
+  Smartphone,
+  Sparkles,
+  Check,
+  X,
+  Upload,
+  Loader2,
+  CloudUpload,
+  Star,
+  Search,
+  Filter,
+  ExternalLink,
+  Layers
+} from 'lucide-react';
 
 export default function AdminPage() {
   const [projects, setProjects] = useState([]);
@@ -10,6 +29,10 @@ export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Search & Filter State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('all'); // 'all', 'web', 'app'
 
   // Form State
   const [formData, setFormData] = useState({
@@ -20,6 +43,7 @@ export default function AdminPage() {
     client: '',
     description: '',
     technologies: '',
+    projectLink: '',
     featured: false
   });
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -109,7 +133,6 @@ export default function AdminPage() {
     setUploadedImageUrls((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
-  // Set any uploaded image as the Main Primary Cover Image (move to index 0)
   const setPrimaryCover = (indexToMakePrimary) => {
     if (indexToMakePrimary === 0) return;
     setUploadedImageUrls((prev) => {
@@ -130,7 +153,6 @@ export default function AdminPage() {
       description: '',
       technologies: '',
       projectLink: '',
-      githubLink: '',
       featured: false
     });
     setUploadedImageUrls([]);
@@ -150,7 +172,6 @@ export default function AdminPage() {
       description: project.description || '',
       technologies: (project.technologies || []).join(', '),
       projectLink: project.projectLink || '',
-      githubLink: project.githubLink || '',
       featured: !!project.featured
     });
     setUploadedImageUrls(project.images || []);
@@ -173,7 +194,6 @@ export default function AdminPage() {
       body.append('description', formData.description);
       body.append('technologies', formData.technologies);
       body.append('projectLink', formData.projectLink || '');
-      body.append('githubLink', formData.githubLink || '');
       body.append('featured', formData.featured ? 'true' : 'false');
 
       uploadedImageUrls.forEach((url) => {
@@ -225,119 +245,257 @@ export default function AdminPage() {
     }
   };
 
+  // Filtered projects computation
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch =
+      project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (project.category && project.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (project.client && project.client.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesType = filterType === 'all' || project.type === filterType;
+
+    return matchesSearch && matchesType;
+  });
+
+  const webCount = projects.filter((p) => p.type === 'web').length;
+  const appCount = projects.filter((p) => p.type === 'app').length;
+
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6 sm:p-10">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 pb-6 border-b border-slate-800">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-xs font-semibold mb-2 border border-blue-500/20">
-              <Sparkles className="w-3.5 h-3.5" /> Modulavers Control Center
+    <div className="min-h-screen bg-slate-950 text-white pt-2 pb-16 px-4 sm:px-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* Header Section */}
+        <div className="relative bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 sm:p-8 backdrop-blur-xl overflow-hidden shadow-2xl">
+          {/* Subtle Ambient Background Light */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 blur-3xl rounded-full pointer-events-none -mr-20 -mt-20" />
+          <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-blue-500/10 text-blue-400 rounded-full text-xs font-semibold mb-3 border border-blue-500/20 backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5" /> Modulavers Control Center
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+                Project Dashboard
+              </h1>
+              <p className="text-slate-400 text-sm mt-2 max-w-2xl leading-relaxed">
+                Manage your system portfolio projects. Upload screenshots directly to Cloudinary and monitor live project showcases.
+              </p>
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Project Management Dashboard</h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Add, update, or remove projects. Images will be organized automatically into <code className="text-blue-400 bg-slate-900 px-1.5 py-0.5 rounded">public/images/projects/web</code> or <code className="text-blue-400 bg-slate-900 px-1.5 py-0.5 rounded">app</code>.
-            </p>
+
+            <button
+              onClick={openAddModal}
+              className="flex items-center gap-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-6 py-3 rounded-2xl shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-300 scale-100 hover:scale-105 active:scale-95 text-sm shrink-0"
+            >
+              <Plus className="w-5 h-5" /> Add New Project
+            </button>
           </div>
-          <button
-            onClick={openAddModal}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2.5 rounded-xl shadow-lg transition-all"
-          >
-            <Plus className="w-5 h-5" /> Add New Project
-          </button>
+
+          {/* Quick Stats Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-800/80">
+            <div className="bg-slate-950/50 border border-slate-800/60 rounded-2xl p-4 flex items-center gap-4">
+              <div className="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+                <Layers className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-2xl font-bold text-white">{projects.length}</span>
+                <p className="text-slate-400 text-xs font-medium">Total Projects</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-950/50 border border-slate-800/60 rounded-2xl p-4 flex items-center gap-4">
+              <div className="p-3 bg-purple-500/10 text-purple-400 rounded-xl border border-purple-500/20">
+                <Globe className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-2xl font-bold text-white">{webCount}</span>
+                <p className="text-slate-400 text-xs font-medium">Web Applications</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-950/50 border border-slate-800/60 rounded-2xl p-4 flex items-center gap-4 col-span-2 sm:col-span-1">
+              <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-2xl font-bold text-white">{appCount}</span>
+                <p className="text-slate-400 text-xs font-medium">Mobile Apps</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filter and Search Toolbar */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-900/40 border border-slate-800/60 p-3 sm:p-4 rounded-2xl backdrop-blur-md">
+          {/* Type Filter Buttons */}
+          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+            {[
+              { id: 'all', label: 'All Projects', count: projects.length },
+              { id: 'web', label: 'Web Applications', count: webCount },
+              { id: 'app', label: 'Mobile Apps', count: appCount }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setFilterType(tab.id)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 shrink-0 ${
+                  filterType === tab.id
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
+                    : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-700/50'
+                }`}
+              >
+                {tab.label}
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-white/10 text-white/90">
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Search Box */}
+          <div className="relative w-full sm:w-72">
+            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search projects by title..."
+              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Projects Grid */}
         {loading ? (
-          <div className="text-center py-20 text-slate-500">Loading projects...</div>
-        ) : projects.length === 0 ? (
-          <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-800">
-            <Folder className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-slate-300">No Projects Found</h3>
-            <p className="text-slate-500 text-sm mt-1 mb-6">Click "Add New Project" above to create your first real project entry.</p>
+          <div className="flex flex-col items-center justify-center py-24 text-slate-500 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            <span className="text-sm font-medium">Loading portfolio projects...</span>
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="text-center py-20 bg-slate-900/40 rounded-3xl border border-slate-800/80 max-w-xl mx-auto p-8">
+            <Folder className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-slate-200">No Projects Found</h3>
+            <p className="text-slate-400 text-xs mt-1 mb-6 leading-relaxed">
+              {searchTerm
+                ? `No projects match your search term "${searchTerm}".`
+                : 'Click "Add New Project" above to create your first portfolio entry.'}
+            </p>
             <button
               onClick={openAddModal}
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg text-sm transition-all"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-5 py-2.5 rounded-xl text-xs transition-all shadow-lg"
             >
               <Plus className="w-4 h-4" /> Add Project Now
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((proj) => (
+            {filteredProjects.map((proj) => (
               <div
                 key={proj.id}
-                className="bg-slate-900/80 rounded-2xl border border-slate-800 overflow-hidden flex flex-col hover:border-slate-700 transition-all group"
+                className="bg-slate-900/60 rounded-3xl border border-slate-800/80 overflow-hidden flex flex-col hover:border-slate-700 transition-all duration-300 group hover:shadow-2xl hover:shadow-blue-500/5 backdrop-blur-xl"
               >
-                {/* Image Preview */}
-                <div className="h-48 bg-slate-950 relative overflow-hidden flex items-center justify-center border-b border-slate-800">
+                {/* Image Preview Container */}
+                <div className="h-52 bg-slate-950 relative overflow-hidden flex items-center justify-center border-b border-slate-800/80">
                   {proj.images && proj.images.length > 0 ? (
                     <img
                       src={proj.images[0]}
                       alt={proj.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
                     <div className="flex flex-col items-center text-slate-600">
                       <ImageIcon className="w-10 h-10 mb-1" />
-                      <span className="text-xs">No images</span>
+                      <span className="text-xs">No images uploaded</span>
                     </div>
                   )}
 
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
+
                   {/* Type Badge */}
                   <span
-                    className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 backdrop-blur-md shadow-md ${
+                    className={`absolute top-4 left-4 px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 backdrop-blur-md shadow-lg border ${
                       proj.type === 'web'
-                        ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                        : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                        : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                     }`}
                   >
                     {proj.type === 'web' ? <Globe className="w-3.5 h-3.5" /> : <Smartphone className="w-3.5 h-3.5" />}
                     {proj.type.toUpperCase()}
                   </span>
 
+                  {/* Image Counter Badge */}
                   {proj.images && proj.images.length > 1 && (
-                    <span className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-0.5 rounded-md backdrop-blur-md">
-                      +{proj.images.length - 1} more
+                    <span className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md text-white text-[11px] font-medium px-2.5 py-0.5 rounded-lg border border-white/10">
+                      {proj.images.length} Photos
                     </span>
                   )}
                 </div>
 
-                {/* Content */}
-                <div className="p-5 flex-1 flex flex-col justify-between">
+                {/* Content Details */}
+                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-blue-400 transition-colors">
+                    {proj.category && (
+                      <span className="text-[10px] font-semibold text-blue-400 uppercase tracking-wider block mb-1">
+                        {proj.category}
+                      </span>
+                    )}
+                    <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
                       {proj.title}
                     </h3>
-                    <p className="text-slate-400 text-xs line-clamp-2 mb-4">{proj.description}</p>
+                    <p className="text-slate-400 text-xs line-clamp-2 mt-2 leading-relaxed">
+                      {proj.description || 'No description provided.'}
+                    </p>
                   </div>
 
                   <div>
-                    {/* Tech Tags */}
+                    {/* Tech Badges */}
                     {proj.technologies && proj.technologies.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mb-4">
-                        {proj.technologies.slice(0, 3).map((tech, idx) => (
-                          <span key={idx} className="bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded-md">
+                        {proj.technologies.slice(0, 4).map((tech, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-slate-800/80 border border-slate-700/50 text-slate-300 text-[10px] px-2.5 py-0.5 rounded-full font-medium"
+                          >
                             {tech}
                           </span>
                         ))}
                       </div>
                     )}
 
-                    {/* Actions */}
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-xs">
-                      <span className="text-slate-500">{proj.createdAt || 'Recent'}</span>
+                    {/* Action Bar */}
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-800/80">
+                      {proj.projectLink ? (
+                        <a
+                          href={proj.projectLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1 hover:underline"
+                        >
+                          Live App <ExternalLink className="w-3 h-3" />
+                        </a>
+                      ) : (
+                        <span className="text-[11px] text-slate-500 font-medium">Internal Project</span>
+                      )}
+
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEditModal(proj)}
-                          className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors"
+                          className="p-2 bg-slate-800/80 hover:bg-blue-600/20 text-slate-300 hover:text-blue-400 border border-slate-700/60 rounded-xl transition-all"
                           title="Edit Project"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(proj.id)}
-                          className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 rounded-lg transition-colors"
+                          className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/20 rounded-xl transition-all"
                           title="Delete Project"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -351,10 +509,11 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Add / Edit Modal */}
+        {/* Add / Edit Project Modal */}
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative">
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl relative my-auto">
+              
               {/* Animated Submitting Overlay */}
               <AnimatePresence>
                 {submitting && (
@@ -362,7 +521,7 @@ export default function AdminPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
+                    className="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
                   >
                     <div className="relative mb-6">
                       <motion.div
@@ -380,38 +539,40 @@ export default function AdminPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="text-xl font-bold text-white mb-2"
                     >
-                      Uploading & Saving Project...
+                      Saving Project...
                     </motion.h3>
                     <p className="text-slate-400 text-xs max-w-xs leading-relaxed">
-                      Uploading images directly to Cloudinary and storing project details...
+                      Uploading images directly to Cloudinary and saving details...
                     </p>
-
-                    <div className="flex items-center gap-2 mt-6 bg-slate-900 px-4 py-2 rounded-full border border-slate-800 text-xs text-blue-400 font-medium">
-                      <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
-                      Processing Request
-                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
-                <h2 className="text-xl font-semibold text-white">
-                  {editingProject ? 'Edit Project' : 'Add New Project'}
-                </h2>
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/50">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <h2 className="text-lg font-bold text-white">
+                    {editingProject ? 'Edit Project Entry' : 'Add New Project'}
+                  </h2>
+                </div>
                 <button
                   onClick={() => !submitting && setIsModalOpen(false)}
                   disabled={submitting}
-                  className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+                  className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              {/* Form Body */}
+              <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[78vh] overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Title */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Project Title *</label>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Project Title *</label>
                     <input
                       type="text"
                       name="title"
@@ -419,13 +580,13 @@ export default function AdminPage() {
                       value={formData.title}
                       onChange={handleInputChange}
                       placeholder="e.g. Modulavers Website"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
 
                   {/* Slug */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Folder / Slug Name *</label>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Folder / Slug Name *</label>
                     <input
                       type="text"
                       name="slug"
@@ -433,7 +594,7 @@ export default function AdminPage() {
                       value={formData.slug}
                       onChange={handleInputChange}
                       placeholder="e.g. modulavers-website"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -441,74 +602,74 @@ export default function AdminPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {/* Type */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Project Type *</label>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Project Type *</label>
                     <select
                       name="type"
                       value={formData.type}
                       onChange={handleInputChange}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                     >
-                      <option value="web">Web (web/)</option>
-                      <option value="app">App (app/)</option>
+                      <option value="web">Web Application</option>
+                      <option value="app">Mobile App</option>
                     </select>
                   </div>
 
                   {/* Category */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Category</label>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Category</label>
                     <input
                       type="text"
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
                       placeholder="e.g. E-Commerce"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
 
                   {/* Client */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Client Name</label>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Client Name</label>
                     <input
                       type="text"
                       name="client"
                       value={formData.client}
                       onChange={handleInputChange}
                       placeholder="e.g. Modulavers Inc"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Description</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Description</label>
                   <textarea
                     name="description"
                     rows={3}
                     value={formData.description}
                     onChange={handleInputChange}
-                    placeholder="Enter short description of the project..."
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    placeholder="Enter detailed description of the project..."
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"
                   />
                 </div>
 
                 {/* Technologies */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Technologies (comma separated)</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Technologies (comma separated)</label>
                   <input
                     type="text"
                     name="technologies"
                     value={formData.technologies}
                     onChange={handleInputChange}
                     placeholder="React, Next.js, Tailwind CSS, Node.js"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
 
-                {/* Project Links (Optional) */}
+                {/* Live Project URL */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Live Project URL <span className="text-slate-500 font-normal">(Optional)</span>
                   </label>
                   <input
@@ -517,17 +678,17 @@ export default function AdminPage() {
                     value={formData.projectLink}
                     onChange={handleInputChange}
                     placeholder="https://example.com"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
 
-                {/* File Upload & Cloudinary Real-time Progress Bar */}
+                {/* File Upload Zone */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Upload Images (Uploaded one-by-one directly to Cloudinary)
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Upload Images (Direct to Cloudinary)
                   </label>
 
-                  <div className="border-2 border-dashed border-slate-800 hover:border-slate-700 bg-slate-950 rounded-xl p-4 text-center cursor-pointer relative">
+                  <div className="border-2 border-dashed border-slate-800 hover:border-blue-500/50 bg-slate-950/60 hover:bg-slate-950 rounded-2xl p-5 text-center cursor-pointer relative transition-all group">
                     <input
                       type="file"
                       multiple
@@ -536,18 +697,18 @@ export default function AdminPage() {
                       onChange={handleFileChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
                     />
-                    <Upload className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-                    <p className="text-xs text-slate-300 font-medium">Click or drag & drop project images to upload to Cloudinary</p>
-                    <p className="text-[10px] text-slate-500 mt-1">Images upload automatically in real-time</p>
+                    <Upload className="w-8 h-8 text-blue-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                    <p className="text-xs text-slate-300 font-medium">Click or drag & drop project images to upload</p>
+                    <p className="text-[10px] text-slate-500 mt-1">Uploaded in real-time to Cloudinary storage</p>
                   </div>
                 </div>
 
-                {/* Progress Bar Container */}
+                {/* Upload Progress Bar */}
                 {uploadingImages && (
-                  <div className="bg-slate-950 border border-blue-500/30 rounded-xl p-3.5 space-y-2">
+                  <div className="bg-slate-950 border border-blue-500/30 rounded-2xl p-4 space-y-2">
                     <div className="flex items-center justify-between text-xs text-blue-400 font-medium">
-                      <span className="flex items-center gap-1.5 truncate max-w-[80%]">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-400" />
+                      <span className="flex items-center gap-2 truncate max-w-[80%]">
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
                         {uploadStatusText || 'Uploading to Cloudinary...'}
                       </span>
                       <span className="font-bold">{uploadProgress}%</span>
@@ -562,29 +723,25 @@ export default function AdminPage() {
                   </div>
                 )}
 
-                {/* Uploaded Cloudinary Image Previews & Main Cover Selection */}
+                {/* Image Previews & Cover Selection */}
                 {uploadedImageUrls.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-medium text-slate-300">
+                      <label className="text-xs font-semibold text-slate-300">
                         Uploaded Images ({uploadedImageUrls.length}):
                       </label>
-                      <span className="text-[10px] text-amber-400 font-medium flex items-center gap-1 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                      <span className="text-[10px] text-amber-400 font-medium flex items-center gap-1 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
                         <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> First image (★) is Main Cover
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-slate-500 mb-3">
-                      Click the <span className="text-amber-400">★ Star</span> on any image to set it as the Primary Cover Image for product cards.
-                    </p>
-
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mt-3">
                       {uploadedImageUrls.map((url, idx) => (
                         <div
                           key={idx}
                           className={`relative rounded-xl overflow-hidden bg-slate-950 border transition-all group ${
                             idx === 0
-                              ? 'border-2 border-amber-400 shadow-lg shadow-amber-500/20 ring-2 ring-amber-400/30'
+                              ? 'border-2 border-amber-400 ring-2 ring-amber-400/20'
                               : 'border-slate-800 hover:border-slate-600'
                           }`}
                         >
@@ -592,7 +749,6 @@ export default function AdminPage() {
                             <img src={url} alt={`Uploaded ${idx + 1}`} className="w-full h-full object-cover" />
                           </div>
 
-                          {/* Cover Badge / Star Button */}
                           {idx === 0 ? (
                             <div className="absolute top-1 left-1 bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded-md text-[9px] font-extrabold flex items-center gap-0.5 shadow-md">
                               <Star className="w-2.5 h-2.5 fill-slate-950" /> COVER
@@ -608,7 +764,6 @@ export default function AdminPage() {
                             </button>
                           )}
 
-                          {/* Delete Button */}
                           <button
                             type="button"
                             onClick={() => removeImage(idx)}
@@ -628,19 +783,19 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors"
+                    className="px-5 py-2.5 text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-800 rounded-xl transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex items-center gap-2 px-5 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors shadow-lg disabled:opacity-50"
+                    className="flex items-center gap-2 px-6 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50"
                   >
                     {submitting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Saving to Cloudinary...
+                        Saving...
                       </>
                     ) : editingProject ? (
                       'Update Project'
@@ -653,6 +808,7 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
       </div>
     </div>
   );
