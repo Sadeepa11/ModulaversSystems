@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import {
   Plus,
   Trash2,
@@ -20,7 +21,8 @@ import {
   Search,
   Filter,
   ExternalLink,
-  Layers
+  Layers,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -261,9 +263,31 @@ export default function AdminPage() {
   const appCount = projects.filter((p) => p.type === 'app').length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white pt-2 pb-16 px-4 sm:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-950 text-white -mt-16 pt-6 pb-16 px-4 sm:px-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         
+        {/* Admin Top Navigation Bar */}
+        <div className="flex items-center justify-between bg-slate-900/80 border border-slate-800/80 rounded-2xl px-5 py-3.5 backdrop-blur-xl shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-sm">
+              M
+            </div>
+            <div>
+              <span className="text-sm font-bold text-white block leading-none">Modulavers Admin</span>
+              <span className="text-[10px] text-slate-400 font-medium">Control Center Panel</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold rounded-xl border border-slate-700/60 transition-all"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Site
+            </Link>
+          </div>
+        </div>
+
         {/* Header Section */}
         <div className="relative bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 sm:p-8 backdrop-blur-xl overflow-hidden shadow-2xl">
           {/* Subtle Ambient Background Light */}
