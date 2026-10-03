@@ -507,33 +507,18 @@ export default function AdminPage() {
                 </div>
 
                 {/* Project Links (Optional) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Live Project URL <span className="text-slate-500 font-normal">(Optional)</span>
-                    </label>
-                    <input
-                      type="url"
-                      name="projectLink"
-                      value={formData.projectLink}
-                      onChange={handleInputChange}
-                      placeholder="https://example.com"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      GitHub Repository URL <span className="text-slate-500 font-normal">(Optional)</span>
-                    </label>
-                    <input
-                      type="url"
-                      name="githubLink"
-                      value={formData.githubLink}
-                      onChange={handleInputChange}
-                      placeholder="https://github.com/user/repository"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Live Project URL <span className="text-slate-500 font-normal">(Optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="projectLink"
+                    value={formData.projectLink}
+                    onChange={handleInputChange}
+                    placeholder="https://example.com"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  />
                 </div>
 
                 {/* File Upload & Cloudinary Real-time Progress Bar */}

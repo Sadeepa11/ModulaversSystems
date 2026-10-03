@@ -331,8 +331,8 @@ export default function ProjectsPortfolioPage() {
                 </div>
 
                 {/* External Action Links */}
-                <div className="pt-6 border-t border-white/10 space-y-3">
-                  {selectedProject.projectLink && (
+                {selectedProject.projectLink && (
+                  <div className="pt-6 border-t border-white/10 space-y-3">
                     <a
                       href={selectedProject.projectLink}
                       target="_blank"
@@ -341,18 +341,8 @@ export default function ProjectsPortfolioPage() {
                     >
                       <ExternalLink className="w-4 h-4" /> Visit Live Website / App
                     </a>
-                  )}
-                  {selectedProject.githubLink && (
-                    <a
-                      href={selectedProject.githubLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold py-3 rounded-xl transition-all border border-white/10"
-                    >
-                      View Source Code on GitHub
-                    </a>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
