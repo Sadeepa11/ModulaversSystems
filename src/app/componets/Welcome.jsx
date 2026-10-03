@@ -15,8 +15,26 @@ const Welcome = () => {
     return (
         <div className="relative min-h-screen w-full flex flex-col items-center justify-center text-white text-center px-4 overflow-hidden pt-20 pb-12 bg-dark-bg">
             
+            {/* Animated Hero Background Image (Ken Burns & Gentle Floating Animation) */}
+            <motion.div
+                initial={{ scale: 1 }}
+                animate={{
+                    scale: [1, 1.08, 1],
+                    x: [0, -15, 0],
+                    y: [0, -10, 0]
+                }}
+                transition={{
+                    duration: 22,
+                    repeat: Infinity,
+                    repeatType: 'reverse',
+                    ease: 'easeInOut'
+                }}
+                className="absolute inset-0 bg-cover bg-center pointer-events-none transform-gpu opacity-70"
+                style={{ backgroundImage: `url('/images/bgWelcome/bgWelcome.webp')` }}
+            />
+
             {/* Dark Overlay with Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-dark-bg pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-dark-bg pointer-events-none"></div>
             
             {/* Glowing Ambient Shapes with Smooth Pulse Animation */}
             <motion.div 
