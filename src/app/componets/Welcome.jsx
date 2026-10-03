@@ -66,20 +66,35 @@ const Welcome = () => {
                     Innovating the Future
                 </motion.div>
                 
-                <SplitText
-                    text="Welcome to ModulaVers Systems"
-                    className="text-3xl md:text-5xl lg:text-7xl font-extrabold text-center mb-6 tracking-tight drop-shadow-lg"
-                    delay={50}
-                    duration={0.1}
-                    ease="power3.out"
-                    splitType="chars"
-                    from={{ opacity: 0, y: 40 }}
-                    to={{ opacity: 1, y: 0 }}
-                    threshold={0.1}
-                    rootMargin="-100px"
-                    textAlign="center"
-                    onLetterAnimationComplete={handleAnimationComplete}
-                />
+                <h1 className="text-3xl md:text-5xl lg:text-7xl font-extrabold text-center mb-6 tracking-tight drop-shadow-lg flex flex-col items-center justify-center gap-1">
+                    <SplitText
+                        text="Welcome to ModulaVers"
+                        className="block"
+                        delay={50}
+                        duration={0.1}
+                        ease="power3.out"
+                        splitType="chars"
+                        from={{ opacity: 0, y: 40 }}
+                        to={{ opacity: 1, y: 0 }}
+                        threshold={0.1}
+                        rootMargin="-100px"
+                        textAlign="center"
+                    />
+                    <SplitText
+                        text="Systems"
+                        className="block"
+                        delay={50}
+                        duration={0.1}
+                        ease="power3.out"
+                        splitType="chars"
+                        from={{ opacity: 0, y: 40 }}
+                        to={{ opacity: 1, y: 0 }}
+                        threshold={0.1}
+                        rootMargin="-100px"
+                        textAlign="center"
+                        onLetterAnimationComplete={handleAnimationComplete}
+                    />
+                </h1>
                 
                 <motion.p 
                     initial={{ opacity: 0, y: 20 }}
